@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">首页</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#" style="color: gray">后台管理系统</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id="userpic"></li>
+                <li style="border-right:1px solid silver;"><a href="#">用户名:</a></li>
+                <li ><a href="mine.html" id="name1">请登录</a></li>
+                <li id="backBtn">
+                    <a href="index.html">返回前台</a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div style="text-align: center;">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label for="user" class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" style="width: 25%" id="user" name="user">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" style="width: 25%" id="password" name="password">
+            </div>
+        </div>
+        <div class="form-group"  style="text-align: left;">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-default" onclick="login()">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var adminid=sessionStorage.getItem('adminid');
+    console.log('adminid:'+adminid);
+    if (adminid!=null)
+        window.location.href='admin.html';
+    function login() {
+        var name=document.getElementById('user').value;
+        var password=document.getElementById('password').value;
+        $.ajax({
+            url: "/admin/login.do?name="+name+"&password="+password,
+            type: "get",
+            success: function (data) {
+                console.log(data);
+                if (data.resMsg=='登录成功'){
+                    sessionStorage.setItem('adminName',data.result.name);
+                    sessionStorage.setItem("adminPic",data.result.pic);
+                    sessionStorage.setItem('adminid',data.result.id);
+                    alert('登陆成功');
+                    window.location.href='admin.html';
+                }else{
+                    alert(data.resMsg);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                alert('请求失败')
+            }
+        })
+    }
+</script>
+</html>

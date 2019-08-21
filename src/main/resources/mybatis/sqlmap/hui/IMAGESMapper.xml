@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.IMAGESMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.IMAGES" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="IMGNAME" property="imgname" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="INTRO" property="intro" jdbcType="VARCHAR" />
+    <result column="THUMB" property="thumb" jdbcType="DECIMAL" />
+    <result column="USERID" property="userid" jdbcType="DECIMAL" />
+    <result column="TYPEID" property="typeid" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, IMGNAME, TITLE, INTRO, THUMB, USERID, TYPEID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.images
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.images
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <!--<insert id="insert" parameterType="com.example.springbootdemo.model.hui.IMAGES" >-->
+    <!--insert into HUI.IMAGES (ID, IMGNAME, TITLE, -->
+      <!--INTRO,USERID,-->
+      <!--TYPEID)-->
+    <!--values (img_seq.nextval, #{imgname,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},-->
+      <!--#{intro,jdbcType=VARCHAR},#{userid,jdbcType=DECIMAL},-->
+      <!--#{typeid,jdbcType=DECIMAL})-->
+  <!--</insert>-->
+  <insert id="insert" parameterType="com.example.springbootdemo.model.hui.IMAGES" >
+    insert into hui.images (IMGNAME, TITLE,
+      INTRO,USERID,
+      TYPEID)
+    values (#{imgname,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
+      #{intro,jdbcType=VARCHAR},#{userid,jdbcType=DECIMAL},
+      #{typeid,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.IMAGES" >
+    insert into hui.images
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="imgname != null" >
+        IMGNAME,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="intro != null" >
+        INTRO,
+      </if>
+      <if test="thumb != null" >
+        THUMB,
+      </if>
+      <if test="userid != null" >
+        USERID,
+      </if>
+      <if test="typeid != null" >
+        TYPEID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="imgname != null" >
+        #{imgname,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null" >
+        #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="thumb != null" >
+        #{thumb,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="typeid != null" >
+        #{typeid,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.IMAGES" >
+    update hui.images
+    <set >
+      <if test="imgname != null" >
+        IMGNAME = #{imgname,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null" >
+        INTRO = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="thumb != null" >
+        THUMB = #{thumb,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        USERID = #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="typeid != null" >
+        TYPEID = #{typeid,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.IMAGES" >
+    update hui.images
+    set IMGNAME = #{imgname,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      INTRO = #{intro,jdbcType=VARCHAR},
+      THUMB = #{thumb,jdbcType=DECIMAL},
+      USERID = #{userid,jdbcType=DECIMAL},
+      TYPEID = #{typeid,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from hui.images
+  </select>
+  <select id="selectCollect" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select * from hui.images i join hui.collects c on i.ID=c.IMGID where c.USERID=${userid}
+    </select>
+  <select id="selectLikeNameOrIntro" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from hui.images where TITLE like '%${name}%' or INTRO like '%${name}%'
+  </select>
+  <select id="selectByType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from hui.images where typeid =${typeid}
+  </select>
+  <select id="selectAllOrderByThumb" resultMap="BaseResultMap">
+    select * from hui.images order by THUMB desc
+  </select>
+  <select id="selectByUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from hui.images where userid=${userid}
+  </select>
+  <select id="selectPurchase" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from images i join purchase p on i.id=p.imgid where p.uid=${uid}
+  </select>
+</mapper>

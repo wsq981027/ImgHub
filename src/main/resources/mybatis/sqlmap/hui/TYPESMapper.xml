@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.TYPESMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.TYPES" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from hui.types
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.types
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <!--<insert id="insert" parameterType="com.example.springbootdemo.model.hui.TYPES" >-->
+    <!--insert into HUI.TYPES (ID, NAME)-->
+    <!--values (type_seq.nextval, #{name,jdbcType=VARCHAR})-->
+  <!--</insert>-->
+  <insert id="insert" parameterType="com.example.springbootdemo.model.hui.TYPES" >
+    insert into hui.types (NAME)
+    values (#{name,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.TYPES" >
+    insert into hui.types
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.TYPES" >
+    update hui.types
+    <set >
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.TYPES" >
+    update hui.types
+    set NAME = #{name,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from hui.types
+  </select>
+</mapper>

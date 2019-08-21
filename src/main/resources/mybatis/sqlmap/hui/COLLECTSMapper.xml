@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.COLLECTSMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.COLLECTS" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="IMGID" property="imgid" jdbcType="DECIMAL" />
+    <result column="USERID" property="userid" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, IMGID, USERID
+  </sql>
+  <select id="selectByImgAndUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from hui.collects where IMGID=${imgid} and USERID=${userid}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.collects
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.collects
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <!--<insert id="insert" parameterType="com.example.springbootdemo.model.hui.COLLECTS" >-->
+    <!--insert into HUI.COLLECTS (ID, IMGID, USERID-->
+      <!--)-->
+    <!--values (col_seq.nextval, #{imgid,jdbcType=DECIMAL}, #{userid,jdbcType=DECIMAL}-->
+      <!--)-->
+  <!--</insert>-->
+  <insert id="insert" parameterType="com.example.springbootdemo.model.hui.COLLECTS" >
+    insert into hui.collects (IMGID, USERID
+      )
+    values (#{imgid,jdbcType=DECIMAL}, #{userid,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.COLLECTS" >
+    insert into hui.collects
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="imgid != null" >
+        IMGID,
+      </if>
+      <if test="userid != null" >
+        USERID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="imgid != null" >
+        #{imgid,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.COLLECTS" >
+    update hui.collects
+    <set >
+      <if test="imgid != null" >
+        IMGID = #{imgid,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        USERID = #{userid,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.COLLECTS" >
+    update hui.collects
+    set IMGID = #{imgid,jdbcType=DECIMAL},
+      USERID = #{userid,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <delete id="deleteByImgAndUser" parameterType="java.lang.Integer">
+      delete from hui.collects where imgid=${imgid} and userid=${userid}
+  </delete>
+</mapper>

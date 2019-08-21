@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.AUDITIMAGESMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.AUDITIMAGES" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="IMGNAME" property="imgname" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="INTRO" property="intro" jdbcType="VARCHAR" />
+    <result column="USERID" property="userid" jdbcType="DECIMAL" />
+    <result column="TYPEID" property="typeid" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, IMGNAME, TITLE, INTRO, USERID, TYPEID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.auditimages
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.auditimages
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <!--<insert id="insert" parameterType="com.example.springbootdemo.model.hui.AUDITIMAGES" >-->
+    <!--insert into HUI.AUDITIMAGES (ID, IMGNAME, TITLE, -->
+      <!--INTRO, USERID, TYPEID-->
+      <!--)-->
+    <!--values (auditimg_seq.nextval, #{imgname,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},-->
+      <!--#{intro,jdbcType=VARCHAR}, #{userid,jdbcType=DECIMAL}, #{typeid,jdbcType=DECIMAL}-->
+      <!--)-->
+  <!--</insert>-->
+    <insert id="insert" parameterType="com.example.springbootdemo.model.hui.AUDITIMAGES" >
+    insert into hui.auditimages (IMGNAME, TITLE,
+      INTRO, USERID, TYPEID
+      )
+    values (#{imgname,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
+      #{intro,jdbcType=VARCHAR}, #{userid,jdbcType=DECIMAL}, #{typeid,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.AUDITIMAGES" >
+    insert into hui.auditimages
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="imgname != null" >
+        IMGNAME,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="intro != null" >
+        INTRO,
+      </if>
+      <if test="userid != null" >
+        USERID,
+      </if>
+      <if test="typeid != null" >
+        TYPEID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="imgname != null" >
+        #{imgname,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null" >
+        #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="typeid != null" >
+        #{typeid,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.AUDITIMAGES" >
+    update hui.auditimages
+    <set >
+      <if test="imgname != null" >
+        IMGNAME = #{imgname,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null" >
+        INTRO = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        USERID = #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="typeid != null" >
+        TYPEID = #{typeid,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.AUDITIMAGES" >
+    update hui.auditimages
+    set IMGNAME = #{imgname,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      INTRO = #{intro,jdbcType=VARCHAR},
+      USERID = #{userid,jdbcType=DECIMAL},
+      TYPEID = #{typeid,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from hui.auditimages
+  </select>
+  <select id="selectLikeName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from hui.auditimages where title like '%${name}%' or intro like '%${name}%'
+  </select>
+</mapper>

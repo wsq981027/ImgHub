@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.USERSMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.USERS" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="PIC" property="pic" jdbcType="VARCHAR" />
+    <result column="BAN" property="ban" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, NAME, PASSWORD, PIC, BAN
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.users
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.users
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.example.springbootdemo.model.hui.USERS" >
+    insert into hui.users (ID, NAME, PASSWORD,
+      PIC, BAN)
+    values (#{id,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{pic,jdbcType=VARCHAR}, #{ban,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.USERS" >
+    insert into hui.users
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="password != null" >
+        PASSWORD,
+      </if>
+      <if test="pic != null" >
+        PIC,
+      </if>
+      <if test="ban != null" >
+        BAN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="ban != null" >
+        #{ban,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.USERS" >
+    update hui.users
+    <set >
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        PASSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        PIC = #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="ban != null" >
+        BAN = #{ban,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.USERS" >
+    update hui.users
+    set NAME = #{name,jdbcType=VARCHAR},
+      PASSWORD = #{password,jdbcType=VARCHAR},
+      PIC = #{pic,jdbcType=VARCHAR},
+      BAN = #{ban,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <!--<insert id="reg" parameterType="com.example.springbootdemo.model.hui.USERS">-->
+    <!--insert into HUI.USERS (ID, NAME, PASSWORD-->
+      <!--)-->
+    <!--values (users_seq.nextval, #{name,jdbcType=VARCHAR}, #{password,jdbcType=DECIMAL}-->
+      <!--)-->
+    <!--</insert>-->
+    <insert id="reg" parameterType="com.example.springbootdemo.model.hui.USERS">
+    insert into hui.users (NAME, PASSWORD
+      )
+    values (#{name,jdbcType=VARCHAR}, #{password,jdbcType=DECIMAL}
+      )
+    </insert>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from hui.users
+    where NAME = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from hui.users
+  </select>
+  <select id="selectBanUsers" resultMap="BaseResultMap">
+    select * from hui.users where BAN = 1
+  </select>
+  <select id="selectLikeName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from hui.users where name like '%${name}%' and ban = 0
+  </select>
+  <select id="selectBanLikeName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from hui.users where name like '%${name}%' and ban = 1
+  </select>
+</mapper>

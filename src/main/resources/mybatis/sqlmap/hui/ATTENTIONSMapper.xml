@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.hui.ATTENTIONSMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.hui.ATTENTIONS" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="ATID" property="atid" jdbcType="DECIMAL" />
+    <result column="FANID" property="fanid" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ATID, FANID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.attentions
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.attentions
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <!--<insert id="insert" parameterType="com.example.springbootdemo.model.hui.ATTENTIONS" >-->
+    <!--insert into HUI.ATTENTIONS (ID, ATID, FANID-->
+      <!--)-->
+    <!--values (at_seq.nextval, #{atid,jdbcType=DECIMAL}, #{fanid,jdbcType=DECIMAL}-->
+      <!--)-->
+  <!--</insert>-->
+  <insert id="insert" parameterType="com.example.springbootdemo.model.hui.ATTENTIONS" >
+    insert into hui.attentions (ATID, FANID
+      )
+    values (#{atid,jdbcType=DECIMAL}, #{fanid,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.hui.ATTENTIONS" >
+    insert into hui.attentions
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="atid != null" >
+        ATID,
+      </if>
+      <if test="fanid != null" >
+        FANID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="atid != null" >
+        #{atid,jdbcType=DECIMAL},
+      </if>
+      <if test="fanid != null" >
+        #{fanid,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.hui.ATTENTIONS" >
+    update hui.attentions
+    <set >
+      <if test="atid != null" >
+        ATID = #{atid,jdbcType=DECIMAL},
+      </if>
+      <if test="fanid != null" >
+        FANID = #{fanid,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.hui.ATTENTIONS" >
+    update hui.attentions
+    set ATID = #{atid,jdbcType=DECIMAL},
+      FANID = #{fanid,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="selectFans" resultType="com.example.springbootdemo.model.hui.USERS" parameterType="java.lang.Integer">
+    select u.id,u.name,u.pic from hui.attentions a join hui.users u on a.fanid=u.id where a.atid=${atid}
+  </select>
+  <select id="selectAt" resultType="com.example.springbootdemo.model.hui.USERS" parameterType="java.lang.Integer">
+        select u.id,u.name,u.pic from hui.attentions a join hui.users u on a.atid=u.id where a.fanid=${fanid}
+  </select>
+  <select id="selectByAtAndFan" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from hui.attentions where atid=${atid} and fanid=${fanid}
+  </select>
+  <delete id="deleteByAtAndUser" parameterType="java.lang.Integer">
+    delete from hui.attentions where atid=${atid} and fanid=${fanid}
+  </delete>
+</mapper>

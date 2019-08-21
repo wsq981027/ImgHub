@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>个人主页</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<style>
+    img{
+        width: 242px;
+        height: 200px;
+        margin-right: 10px;
+        object-fit: cover;
+    }
+</style>
+<body style="height: 100%;">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">首页</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="#">他的主页</a></li>
+            </ul>
+            <div class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search" id="search">
+                </div>
+                <button class="btn btn-default" onclick="mySearch()">搜索</button>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li id="userpic"></li>
+                <li style="border-right:1px solid silver;"><a href="#">用户名:</a></li>
+                <li ><a href="mine.html" id="name1">请登录</a></li>
+                <li id="regBtn1">
+                    <button  class="btn btn-default" data-toggle="modal" data-target="#regModal">注册</button>
+                </li>
+                <li id="logBtn1">
+                    <button  class="btn btn-default" data-toggle="modal" data-target="#logModal">登录</button>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<!--<DIV class="container-fluid">-->
+<!--<DIV class="row row-offcanvas row-offcanvas-left">-->
+<DIV class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas" style="border-right:1px solid silver;height: 100%" id="sidebar">
+    <UL class="nav nav-sidebar">
+
+        <LI><img id="curpic" src="" class="img-circle" style="width: 50px;height: 50px"><h3 id="curname"></h3></LI>
+        <li><h4 id="count"></h4></li>
+        <li id="att"><button class="btn btn-default" id="attbtn" onclick="attention()">关注</button></li>
+        <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getHimself()">他的发布</A></LI>
+
+    </UL>
+</DIV>
+
+
+
+<DIV class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main " style="position: absolute">
+    <table id="imgs" class="table table-hover">
+
+    </table>
+    <hr>
+    <div style="text-align: center;" id="page">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-lg">
+                <li>
+                    <a href="#" aria-label="Previous" onclick="" id="skippre">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li><a id="skip1" href="#" onclick="">1</a></li>
+                <li><a id="skip2" href="#" onclick="">2</a></li>
+                <li><a id="skip3" href="#" onclick="">3</a></li>
+                <li><a id="skip4" href="#" onclick="">4</a></li>
+                <li><a id="skip5" href="#" onclick="">5</a></li>
+                <li>
+                    <a id="skipnex" href="#" aria-label="Next" onclick="">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <h4>当前页数<span class="label label-default" id="curpage"></span></h4>
+    </div>
+</DIV>
+</body>
+<script>
+    var userid=sessionStorage.getItem('id');
+    var points=0;
+
+    $.ajax({
+        url:'/hui/TestController/getPoints.do?userid='+userid,
+        async:false,
+        success:function (datas) {
+            console.log('point:'+datas.result.point);
+            points=datas.result.point;
+        }
+    })
+    <!--获取该用户的信息并展示-->
+    var curid=sessionStorage.getItem('goid');
+    var userid=sessionStorage.getItem('id');
+    $.ajax({
+        url:'/hui/TestController/getUserById.do?userid='+curid,
+        success:function (datas) {
+            document.getElementById('curname').innerText=datas.result.name;
+            $.ajax({
+                url:'/hui/TestController/getAt.do?userid='+curid,
+                success:function (data) {
+                    $.ajax({
+                        url:'/hui/TestController/getFans.do?userid='+curid,
+                        success:function (data2) {
+                            document.getElementById('count').innerText='关注:'+data.result.length+' 粉丝:'+data2.result.length;
+                            document.getElementById('curpic').src='/'+datas.result.pic;
+                        }
+                    })
+                }
+            })
+        }
+    })
+
+    $.ajax({
+        url:'/hui/TestController/getAt.do?userid='+userid,
+        success:function (datas) {
+            for (var i=0;i<datas.result.length;i++){
+                if (datas.result[i]['id']==curid){
+                    document.getElementById('att').innerHTML='<h4>已关注</h4>';
+                    return;
+                }
+            }
+        }
+    })
+
+    function attention() {
+        $.ajax({
+            url:'/hui/TestController/attention.do?atid='+curid+'&fanid='+userid,
+            dataType:'json',
+            success:function (datas) {
+                if (datas.resMsg=='已关注过')
+                    alert('已关注过，不能重复关注');
+                else if (datas.resMsg=='不能关注自己')
+                    alert('不能关注自己');
+                else if (datas.resMsg!='关注失败') {
+                    alert('关注成功');
+                    document.getElementById('att').innerHTML='<h4>已关注</h4>';
+                }else
+                    alert('关注失败');
+                // skip(type,page);
+            }
+        })
+    }
+
+
+
+    var page=1;
+    var type='my';
+    var search='';
+    console.log('userid:'+userid);
+    var name=sessionStorage.getItem('name');
+    var userpic=sessionStorage.getItem('pic');
+    document.getElementById('curpage').innerText=page;
+    // console.log('name='+name);
+    if(name!='null') {
+        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+        document.getElementById('name1').innerText = name;
+        document.getElementById('logBtn1').innerHTML='';
+    }else{
+        alert('请登录');
+        window.location.href='index.html';
+    }
+
+    function mySearch() {
+        document.getElementById('skippre').onclick=function () { skip("search",-1); };
+        document.getElementById('skipnex').onclick=function () { skip("search",0); };
+        document.getElementById('skip1').onclick=function () { skip("search",1); };
+        document.getElementById('skip2').onclick=function () { skip("search",2); };
+        document.getElementById('skip3').onclick=function () { skip("search",3); };
+        document.getElementById('skip4').onclick=function () { skip("search",4); };
+        document.getElementById('skip5').onclick=function () { skip("search",5); };
+
+        search=document.getElementById('search').value;
+        type='search';
+        if (search==''){
+            alert('请输入搜索信息');
+            return;
+        }
+        $.ajax({
+            url:"/hui/TestController/search.do?name="+search,
+            type:"get",
+            success:function (datas) {
+                console.log("search"+datas.result);
+                $('#imgs').empty();
+                for (var i=0;i<10;i++) {
+                    if (userid!=null) {
+                        $.ajax({
+                            url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
+                            type: "post",
+                            async:false,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                if (data.resMsg == '未点赞,未收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                else if (data.resMsg == '已点赞,已收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                else if (data.resMsg == '已点赞,未收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                else
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                            },
+                            error: function (datas) {
+                                console.log(datas);
+                            }
+                        });
+                    }else{
+                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                    }
+                }
+            }
+        })
+    }
+    function reg(){
+        var name=document.getElementById("regName").value;
+        var password=document.getElementById("regPass1").value;
+        var password2=document.getElementById("regPass2").value;
+        if (password2!=password||password2=='null') {
+            alert('两次密码输入不一致');
+            return;
+        }
+
+        $(document).ready(function() {
+            $.ajax({
+                url : "hui/TestController/reg.do?name="+name+"&password="+password,//后台请求的数据，用的是PHP
+                dataType : "json",//数据格式 
+                type : "get",//请求方式
+                async : false,//是否异步请求
+                success : function(data) {   //如果请求成功，返回数据。
+                    if (data.resMsg!="注册成功"){
+                        alert(data.resMsg);
+                        return;
+                    }
+                    else {
+                        alert("注册成功");
+                        window.location.href = "index.html";
+                    }
+                },
+            })
+        })
+    }
+
+    var img1='<div class="col-sm-6 col-md-4" style="width: 282px;height: 380px;"><div class="thumbnail"><a href="#"><div style="width: 242px;height: 200px;"><img onclick="getimg(';
+    var img2=')" src="/';
+    var img3='"></div></a><div class="caption"><h3>';
+    var img4='</h3><p>';
+    var img5='</p><p><a id="collect';
+    var img6='" href="#" class="btn btn-default" role="button" onclick="collect(';
+    var img7emp=')"><i class="glyphicon glyphicon-star-empty"></i>收藏</a> <a id="thumb';
+    var img7=')"><i class="glyphicon glyphicon-star"></i>已收藏</a> <a id="thumb';
+    var img8='" href="#" class="btn btn-default" role="button" onclick="thumb(';
+    var img9emp=')"><i class="glyphicon glyphicon-heart-empty">点赞</i>';
+    var img9=')"><i class="glyphicon glyphicon-heart">已点赞</i>';
+    var img10='</a></p></div></div></div>';
+
+    function getimg(imgid){
+        $.ajax({
+            url:"/hui/TestController/getImgById.do?imgid="+imgid,
+            type:"get",
+            success:function (data) {
+                console.log(data);
+                $('#imgs').empty();
+                $.ajax({
+                    url:"/hui/TestController/getUserById.do?userid="+data.result['userid'],
+                    type:"get",
+                    success:function (userdata) {
+                        $.ajax({
+                            url:'/hui/TestController/checkPurchase.do?userid='+userid+'&imgid='+data.result.id,
+                            success:function (datas) {
+                                if (datas.resMsg=='已购买')
+                                    $('#imgs').append('<div style="text-align: center;"><img src="/'+data.result['imgname']+'" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself('+userdata.result['id']+')"><h3>上传人: '+userdata.result['name']+'</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#" onclick="purchase('+imgid+')"><button class="btn btn-primary btn-lg active">购买图片(1积分)</button></a><a href="/'+data.result['imgname']+'"download="'+data.result['imgname']+'"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
+                                else
+                                    $('#imgs').append('<div style="text-align: center;"><img src="/'+data.result['imgname']+'" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself('+userdata.result['id']+')"><h3>上传人: '+userdata.result['name']+'</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#" onclick="purchase('+imgid+')"><button class="btn btn-primary btn-lg active">购买图片(1积分)</button></a><a href="#" onclick="ale()"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
+                            }
+                        })},error:function (userdata) {
+                        console.log(userdata);
+                    }
+                })
+            },error:function (data) {
+                console.log(data);
+            }
+        })
+    }
+
+    function ale() {
+        alert('请购买后再下载');
+    }
+
+    function purchase(imgid) {
+        $.ajax({
+            url:'/hui/TestController/purchaseImg.do?userid='+userid+'&imgid='+imgid,
+            success:function (datas) {
+                alert(datas.resMsg);
+                getimg(imgid);
+                $.ajax({
+                    url:'/hui/TestController/getPoints.do?userid='+userid,
+                    async:false,
+                    success:function (datas) {
+                        console.log('point:'+datas.result.point);
+                        points=datas.result.point;
+                        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+                    }
+                })
+            }
+        })
+    }
+
+    function getHimself() {
+        document.getElementById('skippre').onclick=function () { skip("my",-1); };
+        document.getElementById('skipnex').onclick=function () { skip("my",0); };
+        document.getElementById('skip1').onclick=function () { skip("my",1); };
+        document.getElementById('skip2').onclick=function () { skip("my",2); };
+        document.getElementById('skip3').onclick=function () { skip("my",3); };
+        document.getElementById('skip4').onclick=function () { skip("my",4); };
+        document.getElementById('skip5').onclick=function () { skip("my",5); };
+        type='my';
+        page=1;
+        document.getElementById('curpage').innerText=page;
+
+        $.ajax({
+            url: "/hui/TestController/getImgByUser.do?userid="+curid,
+            type: "post",
+            contentType: false,
+            processData: false,
+            success: function (datas) {
+                $('#imgs').empty();
+                $('#page').show();
+                console.log(datas);
+                for (var i=0;i<10;i++) {
+                    if (userid!=null) {
+                        $.ajax({
+                            url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
+                            type: "post",
+                            async:false,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                console.log('ssss:'+data);
+                                if (data.resMsg == '未点赞,未收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                else if (data.resMsg == '已点赞,已收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                else if (data.resMsg == '已点赞,未收藏')
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                else
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                            },
+                            error: function (datas) {
+                                console.log(datas);
+                            }
+                        });
+                    }else{
+                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                    }
+                }
+            },
+            error: function (datas) {
+                console.log(datas);
+            }
+        });
+    }
+
+    function skip(type,flag) {
+        if (flag==-1)
+            page=page-1;
+        else if (flag==0)
+            page=page+1;
+        else
+            page=flag;
+        if (page==0)
+            page=1;
+        document.getElementById('curpage').innerText=page;
+        if (type=='my'){
+            $.ajax({
+                url: "/hui/TestController/getImgByUser.do?userid="+curid,
+                type: "post",
+                contentType: false,
+                processData: false,
+                success: function (datas) {
+                    console.log('my'+datas);
+                    $('#imgs').empty();
+                    for (var i=(page-1)*10;i<page*10;i++) {
+                        if (userid!=null) {
+                            $.ajax({
+                                url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
+                                type: "post",
+                                async:false,
+                                contentType: false,
+                                processData: false,
+                                success: function (data) {
+                                    if (data.resMsg == '未点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,已收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                },
+                                error: function (datas) {
+                                    console.log(datas);
+                                }
+                            });
+                        }else{
+                            $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                        }
+                    }
+                },
+                error: function (datas) {
+                    console.log(datas);
+                }
+            });
+        }
+        if (type=='collect'){
+            $.ajax({
+                url: "/hui/TestController/getImgsOnCollect.do",
+                type: "post",
+                contentType: false,
+                processData: false,
+                success: function (datas) {
+                    console.log(datas);
+                    $('#imgs').empty();
+                    for (var i=(page-1)*10;i<page*10;i++) {
+                        if (userid!=null) {
+                            $.ajax({
+                                url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
+                                type: "post",
+                                async:false,
+                                contentType: false,
+                                processData: false,
+                                success: function (data) {
+                                    if (data.resMsg == '未点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,已收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                },
+                                error: function (datas) {
+                                    console.log(datas);
+                                }
+                            });
+                        }else{
+                            $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                        }
+                    }
+                },
+                error: function (datas) {
+                    console.log(datas);
+                }
+            });
+        }
+        if (type=='search'){
+            $.ajax({
+                url:"/hui/TestController/search.do?name="+search,
+                type:"get",
+                success:function (datas) {
+                    console.log("search"+datas.result);
+                    $('#imgs').empty();
+                    for (var i=(page-1)*10;i<page*10;i++) {
+                        if (userid!=null) {
+                            $.ajax({
+                                url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
+                                type: "post",
+                                async:false,
+                                contentType: false,
+                                processData: false,
+                                success: function (data) {
+                                    if (data.resMsg == '未点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,已收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else if (data.resMsg == '已点赞,未收藏')
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    else
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                },
+                                error: function (datas) {
+                                    console.log(datas);
+                                }
+                            });
+                        }else{
+                            $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                        }
+                    }
+                }
+            })
+        }
+        if (type=='fans'){
+            $('#imgs').empty();
+            $('#imgs').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
+            $.ajax({
+                url:'/hui/TestController/getFans.do?userid='+userid,
+                dataType:'json',
+                success:function (datas) {
+                    console.log('fans:'+datas);
+                    for (var i=(page-1)*10;i<page*10;i++) {
+                        var n=parseInt(i)+1;
+                        $('#imgs').append('<tr><td>' + n + '</td><td>' + datas.result[i]['name'] + '</td><td><img class="img img-circle" src="/' + datas.result[i]['pic'] + '" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="attention(' + datas.result[i]['id'] + ')">关注</a>|<a href="#" onclick="gotoHimslef(' + datas.result[i]['id'] + ')">他的主页</a></td></tr>');
+                    }
+                }
+            })
+        }
+        if (type=='ats'){
+            $('#imgs').empty();
+            $('#imgs').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
+            $.ajax({
+                url:'/hui/TestController/getAt.do?userid='+userid,
+                dataType:'json',
+                success:function (datas) {
+                    console.log('ats:'+datas);
+                    for (var i=(page-1)*10;i<page*10;i++) {
+                        var n=parseInt(i)+1;
+                        $('#imgs').append('<tr><td>' + n + '</td><td>' + datas.result[i]['name'] + '</td><td><img class="img img-circle" src="/' + datas.result[i]['pic'] + '" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="unattention(' + datas.result[i]['id'] + ')">取消关注</a>|<a href="#" onclick="gotoHimslef(' + datas.result[i]['id'] + ')">他的主页</a></td></tr>');
+                    }
+                }
+            })
+        }
+    }
+
+    function thumb(id) {
+        if (userid==null){
+            alert('请在登录后点赞');
+            return;
+        }
+        $.ajax({
+            url: "/hui/TestController/thumb.do?imgid="+id+"&userid="+userid,
+            type: "post",
+            success: function (data) {
+                console.log(data);
+                skip(type,page);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function collect(imgid){
+        if (userid==null){
+            alert('请在登录后收藏');
+            return;
+        }
+        $.ajax({
+            url: "/hui/TestController/collect.do?imgid="+imgid+"&userid="+userid,
+            type: "post",
+            success: function (data) {
+                console.log(data);
+                if (data.resMsg=="已收藏过")
+                    alert('取消收藏成功');
+                else {
+                    alert('收藏成功');
+                }
+                skip(type,page);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function backToMain(){
+        skip(type,page);
+    }
+</script>
+</html>

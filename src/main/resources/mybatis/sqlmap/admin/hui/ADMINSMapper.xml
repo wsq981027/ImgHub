@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.admin.hui.ADMINSMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.admin.hui.ADMINS" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="PIC" property="pic" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, NAME, PASSWORD, PIC
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hui.admins
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from hui.admins where NAME='${name}'
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hui.admins
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.example.springbootdemo.model.admin.hui.ADMINS" >
+    insert into hui.admins (ID, NAME, PASSWORD,
+      PIC)
+    values (#{id,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{pic,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.admin.hui.ADMINS" >
+    insert into hui.admins
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="password != null" >
+        PASSWORD,
+      </if>
+      <if test="pic != null" >
+        PIC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.admin.hui.ADMINS" >
+    update hui.admins
+    <set >
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        PASSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        PIC = #{pic,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.admin.hui.ADMINS" >
+    update hui.admins
+    set NAME = #{name,jdbcType=VARCHAR},
+      PASSWORD = #{password,jdbcType=VARCHAR},
+      PIC = #{pic,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>

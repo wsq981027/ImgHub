@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.PURCHASEMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.PURCHASE" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="imgid" property="imgid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, imgid, uid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from purchase
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from purchase
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.springbootdemo.model.PURCHASE" >
+    insert into purchase (imgid, uid
+      )
+    values (#{imgid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.PURCHASE" >
+    insert into purchase
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imgid != null" >
+        imgid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imgid != null" >
+        #{imgid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.PURCHASE" >
+    update purchase
+    <set >
+      <if test="imgid != null" >
+        imgid = #{imgid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.PURCHASE" >
+    update purchase
+    set imgid = #{imgid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByUserAndImg" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from purchase where uid=${uid} and imgid=${imgid}
+  </select>
+</mapper>
