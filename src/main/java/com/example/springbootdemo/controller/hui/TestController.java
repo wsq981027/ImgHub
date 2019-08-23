@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * Copyright (C) 2014-2016 东华软件股份公司
+ * Copyright (C) 2014-2016 
  * 功能描述: 本地PERSON表的增删改查
  * 作    者: wangzenghui
  * 创建时间: 2019/7/17 14:17
