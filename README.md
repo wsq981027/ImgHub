@@ -1,1 +1,1 @@
-运行前需要再application.properties配置文件中修改数据库连接地址，还要修改图片文件夹的路径。
+运行前需要在application.properties配置文件中修改数据库连接地址，还要修改图片文件夹的路径。

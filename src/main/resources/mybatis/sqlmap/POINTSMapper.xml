@@ -20,9 +20,9 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.example.springbootdemo.model.POINTS" >
-    insert into points (id, uid, point
+    insert into points (uid, point
       )
-    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{point,jdbcType=INTEGER}
+    values (#{uid,jdbcType=INTEGER}, #{point,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.example.springbootdemo.model.POINTS" >

@@ -64,6 +64,11 @@ public class TestServiceImpl implements TestService {
         String password=new MD5Util().EncoderByMd5(users.getPassword());
         users.setPassword(password);
         res=usersMapper.reg(users);
+        selUser=usersMapper.selectByName(users.getName());
+        POINTS points=new POINTS();
+        points.setUid(selUser.getId());
+        points.setPoint(10);
+        pointsMapper.insert(points);
         if (res==0){
             responseBo.setResMsg("注册失败");
             return responseBo;
