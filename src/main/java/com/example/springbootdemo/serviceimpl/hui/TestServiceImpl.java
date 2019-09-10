@@ -1,8 +1,10 @@
 package com.example.springbootdemo.serviceimpl.hui;
 
+import com.example.springbootdemo.mapper.DEPOSITSMapper;
 import com.example.springbootdemo.mapper.POINTSMapper;
 import com.example.springbootdemo.mapper.PURCHASEMapper;
 import com.example.springbootdemo.mapper.hui.*;
+import com.example.springbootdemo.model.DEPOSITS;
 import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.model.PURCHASE;
 import com.example.springbootdemo.model.hui.*;
@@ -45,6 +47,8 @@ public class TestServiceImpl implements TestService {
     POINTSMapper pointsMapper;
     @Resource
     PURCHASEMapper purchaseMapper;
+    @Resource
+    DEPOSITSMapper depositsMapper;
     /**
      * 功能描述:注册
      * 作者: wangzenghui
@@ -627,6 +631,19 @@ public class TestServiceImpl implements TestService {
         responseBo.setResult(list);
         return responseBo;
     }
+
+    @Override
+    public ResponseBo deposit(DEPOSITS deposits) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        int res=depositsMapper.insert(deposits);
+        if (res==0){
+            responseBo.setResMsg("插入失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("插入成功");
+        return responseBo;
+    }
+
 
 
 }

@@ -71,6 +71,7 @@
             <UL class="nav collapse" id="mastersubmenu" style="padding-left: 20px;">
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getUsers()">用户列表</A></LI>
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getBanUser()">封禁用户列表</A></LI>
+                <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getDeposit()">充值列表</A></LI>
             </UL>
         </LI>
         <LI><A class="accordion-toggle collapsed" style="color: gray;border-bottom: 1px solid silver" href="#" data-toggle="collapse" data-target="#mastersubmenu2">图片维护</A>
@@ -86,6 +87,7 @@
             </UL>
         </LI>
         <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="updateAdmin()">修改账号信息</A></LI>
+        <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="logout()">注销</A></LI>
 
         <!--<LI><A style="color: gray" href="changePassword.php">密码维护</A></LI>-->
 
@@ -215,16 +217,27 @@
                         if (searchType=='用户'){
                             $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
                             for (var i=0;i<12;i++) {
-                                var n=parseInt(i)+1;
-                                if (datas.result[i]['ban']!=1)
-                                    $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="ban('+datas.result[i]['id']+')">封禁</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
-                            }
+                                $.ajax({
+                                    url:'/hui/TestController/getPoints.do?userid='+datas.result[i]['id'],
+                                    async:false,
+                                    success:function (datap) {
+                                        var n=parseInt(i)+1;
+                                        if (datas.result[i]['ban']!=1)
+                                            $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td>'+datap.result.point+'</td><td><a href="#" onclick="ban('+datas.result[i]['id']+')">封禁</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
+                                    }
+                                })}
                         }
                         if (searchType=='封禁用户'){
                             $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
                             for (var i=0;i<12;i++) {
-                                var n=parseInt(i)+1;
-                                $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="unban('+datas.result[i]['id']+')">解封</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
+                                $.ajax({
+                                    url:'/hui/TestController/getPoints.do?userid='+datas.result[i]['id'],
+                                    async:false,
+                                    success:function (datap) {
+                                        var n=parseInt(i)+1;
+                                        $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td>'+datap.result.point+'</td><td><a href="#" onclick="unban('+datas.result[i]['id']+')">解封</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
+                                    }
+                                })
                             }
                         }
                         if (searchType=='待审核图片'){
@@ -308,12 +321,17 @@
                         $('#users').empty();
                 $('#page').show();
                 $('#users').append('<tbody>');
-                $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
+                $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>积分</td> <td>操作</td> </tr>');
                 for (var i=0;i<12;i++) {
-                    var n=parseInt(i)+1;
-                    if (datas.result[i]['ban']!=1)
-                        $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="ban('+datas.result[i]['id']+')">封禁</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
-                }
+                    $.ajax({
+                        url:'/hui/TestController/getPoints.do?userid='+datas.result[i]['id'],
+                        async:false,
+                        success:function (datap) {
+                            var n=parseInt(i)+1;
+                            if (datas.result[i]['ban']!=1)
+                                $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td>'+datap.result.point+'</td><td><a href="#" onclick="ban('+datas.result[i]['id']+')">封禁</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
+                        }
+                    })}
                 $('#users').append('</tbody>');
 
             },
@@ -343,11 +361,17 @@
                 $('#users').empty();
                 $('#page').show();
                 $('#users').append('<tbody>');
-                $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
+                $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>积分</td> <td>操作</td> </tr>');
                 for (var i=0;i<12;i++) {
-                    var n=parseInt(i)+1;
-                    $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td><a href="#" onclick="unban('+datas.result[i]['id']+')">解封</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
-                }
+                    $.ajax({
+                        url:'/hui/TestController/getPoints.do?userid='+datas.result[i]['id'],
+                        async:false,
+                        success:function (datap) {
+                            var n=parseInt(i)+1;
+                            $('#users').append('<tr><td>'+n+'</td><td>'+datas.result[i]['name']+'</td><td><img class="img img-circle" src="/'+datas.result[i]['pic']+'" alt="" style="width: 50px;height: 50px"></td><td>'+datap.result.point+'</td><td><a href="#" onclick="unban('+datas.result[i]['id']+')">解封</a>|<a href="#" onclick="deleteUserById('+datas.result[i]['id']+')">删除</a></td></tr>');
+                        }
+                    })
+                    }
                 $('#users').append('</tbody>');
             },
             error: function (datas) {
@@ -651,8 +675,8 @@
         console.log('sss='+page2);
         sessionStorage.setItem('page2',page2);
         document.getElementById('curpage').innerText=sessionStorage.getItem('page2');
+        $('#users').empty();
         $('#users').append('<tbody>');
-
         if (type=='img'){
         $.ajax({
             url: "/hui/TestController/getImgs.do",
@@ -660,7 +684,6 @@
             contentType: false,
             processData: false,
             success: function (datas) {
-                $('#users').empty();
                 $('#page').show();
                 $('#users').append('<tr> <td>编号</td> <td>类型</td> <td>标题</td> <td>简介</td> <td>图片</td> <td>上传人</td> <td>点赞数</td> <td>操作</td> </tr>');
                 for (var i=(page2-1)*12;i<page2*12;i++) {
@@ -695,7 +718,6 @@
                 contentType: false,
                 processData: false,
                 success: function (datas) {
-                    $('#users').empty();
                     $('#page').show();
                     $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
                     for (var i=(page2-1)*12;i<page2*12;i++) {
@@ -716,7 +738,6 @@
                 contentType: false,
                 processData: false,
                 success: function (datas) {
-                    $('#users').empty();
                     $('#page').show();
                     $('#users').append('<tr> <td>编号</td> <td>用户名</td> <td>用户头像</td> <td>操作</td> </tr>');
                     for (var i=(page2-1)*12;i<page2*12;i++) {
@@ -736,7 +757,6 @@
                 contentType: false,
                 processData: false,
                 success: function (datas) {
-                    $('#users').empty();
                     $('#page').show();
                     $('#users').append('<tr> <td>编号</td> <td>类型名</td><td>操作</td> </tr>');
                     for (var i=(page2-1)*12;i<page2*12;i++) {
@@ -754,7 +774,6 @@
                 url:'/admin/getAuditImgs.do',
                 type:'get',
                 success:function (datas) {
-                    $('#users').empty();
                     $('#page').show();
                     $('#users').append('<tr> <td>编号</td> <td>类型</td> <td>标题</td> <td>简介</td> <td>图片</td> <td>上传人</td> <td>操作</td> </tr>');
                     for (var i=(page2-1)*12;i<page2*12;i++) {
@@ -770,7 +789,7 @@
                                     type: "get",
                                     async: false,
                                     success: function (datat) {
-                                        $('#users').append('<tr><td>' + n + '</td><td>'+datat.result.name+'</td><td>' + datas.result[i]['title'] + '</td><td>' + datas.result[i]['intro'] + '</td><td><img class="img img-rounded" src="/' + datas.result[i]['imgname'] + '" alt="" style="width: 50px;height: 50px"></td><td>' + data.result['name'] + '</td><td><a href="#" onclick="auditImg('+datas.result[i]['id']+')"></a><a href="#" onclick="unauditImg(' + datas.result[i]['id'] + ')">不通过</a></td></tr>');
+                                        $('#users').append('<tr><td>' + n + '</td><td>'+datat.result.name+'</td><td>' + datas.result[i]['title'] + '</td><td>' + datas.result[i]['intro'] + '</td><td><img class="img img-rounded" src="/' + datas.result[i]['imgname'] + '" alt="" style="width: 50px;height: 50px"></td><td>' + data.result['name'] + '</td><td><a href="#" onclick="auditImg('+datas.result[i]['id']+')">通过|</a><a href="#" onclick="unauditImg(' + datas.result[i]['id'] + ')">不通过</a></td></tr>');
                                     }
                                 })
                             }
@@ -779,8 +798,78 @@
                 }
             })
         }
+        if (type=='deposit'){
+            $('#users').append('<tb ody>')
+            $('#users').append('<tr> <td>编号</td> <td>积分</td> <td>用户</td> <td>操作</td> </tr>');
+            $.ajax({
+                url:'/admin/getDeposits.do',
+                success:function (datas) {
+                    for (var i=0;i<12;i++){
+                        $.ajax({
+                            url:'/hui/TestController/getUserById.do?userid='+datas.result[i]['uid'],
+                            async:false,
+                            success:function (data) {
+                                $('#users').append('<tr> <td>'+i+'</td> <td>'+datas.result[i]['point']+'</td> <td>'+data.result.name+'</td> <td><a href="#" onclick="addPoint('+datas.result[i]['point']+','+datas.result[i]['id']+','+datas.result[i]['uid']+')">通过|</a><a href="#" onclick="addPoint(0)">不通过</a></td> </tr>')
+                            }
+                        })
+                    }
+                }
+            })
+        }
         $('#users').append('</tbody>');
 
+
+    }
+
+    function logout() {
+        if(!confirm('确认注销?'))
+            return;
+        sessionStorage.removeItem('adminid');
+        window.location.href='index.html';
+    }
+
+    function getDeposit() {
+        document.getElementById('skippre').onclick=function () { skip("deposit",-1); };
+        document.getElementById('skipnex').onclick=function () { skip("deposit",0); };
+        document.getElementById('skip1').onclick=function () { skip("deposit",1); };
+        document.getElementById('skip2').onclick=function () { skip("deposit",2); };
+        document.getElementById('skip3').onclick=function () { skip("deposit",3); };
+        document.getElementById('skip4').onclick=function () { skip("deposit",4); };
+        document.getElementById('skip5').onclick=function () { skip("deposit",5); };
+
+        sessionStorage.setItem('page2',1);
+        document.getElementById('curpage').innerText=sessionStorage.getItem('page2');
+
+        $('#users').empty();
+        $('#users').append('<tbody>')
+        $('#users').append('<tr> <td>编号</td> <td>积分</td> <td>用户</td> <td>操作</td> </tr>');
+        $.ajax({
+            url:'/admin/getDeposits.do',
+            success:function (datas) {
+                for (var i=0;i<12;i++){
+                    $.ajax({
+                        url:'/hui/TestController/getUserById.do?userid='+datas.result[i]['uid'],
+                        async:false,
+                        success:function (data) {
+                            $('#users').append('<tr> <td>'+i+'</td> <td>'+datas.result[i]['point']+'</td> <td>'+data.result.name+'</td> <td><a href="#" onclick="addPoint('+datas.result[i]['point']+','+datas.result[i]['id']+','+datas.result[i]['uid']+')">通过|</a><a href="#" onclick="addPoint(0,'+datas.result[i]['id']+','+datas.result[i]['uid']+')">不通过</a></td> </tr>')
+                        }
+                    })
+                }
+            }
+        })
+    }
+    function addPoint(p,id,uid) {
+        $.ajax({
+            url:'/admin/addPoint.do?id='+id+'&uid='+uid+'&point='+p,
+            success:function (datas) {
+                console.log(datas);
+                if (datas.resMsg=='添加成功')
+                    alert('操作成功');
+                else
+                    alert('操作失败');
+                getDeposit();
+            }
+        })
 
     }
 </script>

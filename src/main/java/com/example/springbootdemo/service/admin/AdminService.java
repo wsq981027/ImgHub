@@ -1,5 +1,6 @@
 package com.example.springbootdemo.service.admin;
 
+import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.model.admin.hui.ADMINS;
 import com.example.springbootdemo.model.hui.TYPES;
 import com.example.springbootdemo.response.ResponseBo;
@@ -135,4 +136,20 @@ public interface AdminService {
      */
 
     ResponseBo unauditImg(int imgid) throws Exception;
+
+    /**
+     * 功能描述:获得充值表数据
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 10:34
+     */
+
+    ResponseBo getDeposits() throws Exception;
+
+    /**
+     * 功能描述:添加积分，删除充值表
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 10:52
+     */
+
+    ResponseBo addPoint(POINTS points) throws Exception;
 }

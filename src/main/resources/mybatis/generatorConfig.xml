@@ -40,8 +40,8 @@
         </javaClientGenerator>
 
 
-        <table schema="hui" tableName="purchase"
-               domainObjectName="PURCHASE" enableCountByExample="false"
+        <table schema="hui" tableName="deposits"
+               domainObjectName="DEPOSITS" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

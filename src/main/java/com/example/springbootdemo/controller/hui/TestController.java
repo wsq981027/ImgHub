@@ -1,5 +1,6 @@
 package com.example.springbootdemo.controller.hui;
 
+import com.example.springbootdemo.model.DEPOSITS;
 import com.example.springbootdemo.model.hui.PERSON;
 import com.example.springbootdemo.model.hui.USERS;
 import com.example.springbootdemo.response.ResponseBo;
@@ -26,7 +27,7 @@ import java.util.Date;
 
 /**
  * Copyright (C) 2014-2016 
- * 功能描述: 本地PERSON表的增删改查
+ * 功能描述: 前台功能
  * 作    者: wangzenghui
  * 创建时间: 2019/7/17 14:17
  * 修改记录:
@@ -589,4 +590,26 @@ public class TestController {
         }
         return responseBo;
     }
+
+    /**
+     * 功能描述:充值
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 10:32
+     */
+
+    @RequestMapping("/deposit.do")
+    public ResponseBo deposit(DEPOSITS deposits){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 deposit 方法");
+        try {
+            responseBo=testService.deposit(deposits);
+        } catch (Exception e) {
+            log.info("deposit 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("deposit 方法出参"+responseBo.getResMsg());
+        return responseBo;
+    }
+
+
 }

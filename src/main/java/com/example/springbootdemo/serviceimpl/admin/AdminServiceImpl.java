@@ -1,10 +1,13 @@
 package com.example.springbootdemo.serviceimpl.admin;
 
+import com.example.springbootdemo.mapper.DEPOSITSMapper;
+import com.example.springbootdemo.mapper.POINTSMapper;
 import com.example.springbootdemo.mapper.admin.hui.ADMINSMapper;
 import com.example.springbootdemo.mapper.hui.AUDITIMAGESMapper;
 import com.example.springbootdemo.mapper.hui.IMAGESMapper;
 import com.example.springbootdemo.mapper.hui.TYPESMapper;
 import com.example.springbootdemo.mapper.hui.USERSMapper;
+import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.model.admin.hui.ADMINS;
 import com.example.springbootdemo.model.hui.AUDITIMAGES;
 import com.example.springbootdemo.model.hui.IMAGES;
@@ -38,6 +41,10 @@ public class AdminServiceImpl implements AdminService {
     TYPESMapper typesMapper;
     @Resource
     AUDITIMAGESMapper auditimagesMapper;
+    @Resource
+    DEPOSITSMapper depositsMapper;
+    @Resource
+    POINTSMapper pointsMapper;
 
     @Override
     public ResponseBo login(String name, String password) throws Exception {
@@ -327,4 +334,35 @@ public class AdminServiceImpl implements AdminService {
         responseBo.setResMsg("审核成功");
         return responseBo;
     }
+
+    @Override
+    public ResponseBo getDeposits() throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        List list=depositsMapper.selectAll();
+        if (list==null){
+            responseBo.setResMsg("获取失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("获取成功");
+        responseBo.setResult(list);
+        return responseBo;
+    }
+
+    @Override
+    public ResponseBo addPoint(POINTS points) throws Exception {
+        int id=points.getId();//deposits表id
+        ResponseBo responseBo=new ResponseBo();
+        POINTS selPoint=pointsMapper.selectByUid(points.getUid());
+        points.setId(selPoint.getId());
+        points.setPoint(selPoint.getPoint()+points.getPoint());
+        int res=pointsMapper.updateByPrimaryKey(points);
+        depositsMapper.deleteByPrimaryKey(id);
+        if (res==0){
+            responseBo.setResMsg("添加失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("添加成功");
+        return responseBo;
+    }
+
 }

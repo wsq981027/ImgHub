@@ -65,6 +65,7 @@
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getMyImgs()">我发布的图片</A></LI>
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getMyAts()" id="myats">我的关注</A></LI>
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getMyFans()" id="myfans">我的粉丝</A></LI>
+                <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getDepositView()">账号充值</A></LI>
                 <LI><A class="accordion-toggle collapsed" style="color: gray;border-bottom: 1px solid silver" href="#" data-toggle="collapse" data-target="#mastersubmenu3">账号安全</A>
                     <UL class="nav collapse" id="mastersubmenu3" style="padding-left: 20px;">
                         <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="updateUser()">修改账号信息</A></LI>
@@ -232,11 +233,9 @@
         $.ajax({
             url:'/hui/TestController/logout.do',
             success:function (datas) {
-                if (datas.resMsg!='注销失败')
-                    alert('注销成功');
-                else
-                    alert('注销失败');
-                sessionStorage.clear();
+                sessionStorage.removeItem('id');
+                sessionStorage.removeItem('name');
+                sessionStorage.removeItem('pic');
                 window.location.href='index.html';
             }
         })
@@ -746,13 +745,13 @@
         }
         if (type=='purchase'){
             $.ajax({
-                url: "/hui/TestController/getImgsPurchase.do",
+                url: "/hui/TestController/getImgPurchase.do?userid="+userid,
                 success: function (datas) {
                     $('#imgs').empty();
                     $('#page').show();
                     console.log(datas);
                     for (var i=(page-1)*10;i<page*10;i++) {
-                        console.log('user:'+userid);
+                        console.log(datas.result[i]);
                         if (userid!=null) {
                             $.ajax({
                                 url: "/hui/TestController/checkThumbAndCollect.do?imgid=" + datas.result[i]['id'] + "&userid=" + userid,
@@ -907,6 +906,47 @@
             }
         });
 
+    }
+
+    function getDepositView() {
+        $('#imgs').empty();
+        $('#page').hide();
+        $('#imgs').append('<button onclick="showQRCode(1)" class="btn btn-default">1￥</button><span>:3积分</span><br>' +
+            '<button  onclick="showQRCode(3)" class="btn btn-default">3￥</button><span>:10积分</span><br>' +
+            '<button  onclick="showQRCode(5)" class="btn btn-default">5￥</button><span>:20积分</span>');
+    }
+    function showQRCode(money) {
+        $('#imgs').empty();
+            $('#imgs').append('<img src="/'+money+'.jpg" style="width: 300px;height: 500px"><br> 支付宝用户名:<input type="text" id="aliname"><br><button onclick="confirmPay('+money+')" class="btn btn-default">支付</button> <button class="btn btn-default" onclick="getDepositView()">返回</button>')
+        }
+        var aliname;
+    function confirmPay(money) {
+        aliname=document.getElementById('aliname').value;
+        if (aliname==''){
+            alert('请输入支付宝用户名');
+            return;
+        }
+        if (confirm('支付完成?'))
+            deposit(money);
+    }
+    function deposit(money) {
+        var point=0;
+        if (money==1)
+            point=3;
+        if (money==3)
+            point=10;
+        if (money==5)
+            point=20;
+            $.ajax({
+                url:'/hui/TestController/deposit.do?uid='+userid+'&point='+point+'&money='+money+'&aliname='+aliname,
+                success:function (datas) {
+                    console.log(datas);
+                    if (datas.resMsg=='插入成功')
+                        alert('操作成功，将在客服确认后为您添加积分');
+                    if (datas.resMsg=='插入失败')
+                        alert('操作失败，如已扣费，请联系客服');
+                }
+            })
     }
 </script>
 

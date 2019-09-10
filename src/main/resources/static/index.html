@@ -106,7 +106,8 @@
             </nav>
             <h4>当前页数<span class="label label-default" id="curpage"></span></h4>
         </div>
-        <div style="text-align: center;"><a href="adminLog.html">Admin</a></div>
+        <div style="text-align: center;"><a href="#" onclick="gotoAdmin()">Admin</a></div>
+        <div style="text-align: center;"><span>官方邮箱: wsq981027@163.com</span></div>
 </div>
 
     <!--上传图片-->
@@ -412,8 +413,9 @@
             processData: false,
             success: function (datas) {
                 // $('#page').show();
+                $('#imgs2').append('<tbody>');
                 $('#imgs2').append('<tr> <td>编号</td> <td>类型</td> <td>标题</td><td>图片</td> <td>上传人</td> <td>点赞数</td></tr>');
-                for (var i=0;i<12;i++) {
+                for (var i=0;i<9;i++) {
                     var n=parseInt(i)+1;
                     $.ajax({
                         url: "/hui/TestController/getUserById.do?userid=" + datas.result[i]['userid'],
@@ -428,6 +430,7 @@
                                         $('#imgs2').append('<tr><td>' + n + '</td><td>'+datat.result.name+'</td><td>' + datas.result[i]['title'] + '</td><td><a href="#" onclick="getimg('+datas.result[i]['id']+')"><img class="img img-rounded" src="/' + datas.result[i]['imgname'] + '" alt="" style="width: 50px;height: 50px"></a></td><td>' + data.result['name'] + '</td><td>' + datas.result[i]['thumb'] + '</td></tr>');
                                 }
                             })
+                            $('#imgs2').append('</tbody>');
                         }
                     })
                 }
@@ -757,6 +760,14 @@
                 },
             })
         })
+    }
+
+    function gotoAdmin() {
+        var adminid=sessionStorage.getItem('adminid');
+        if(adminid!=null)
+            window.location.href='admin.html';
+        else
+            window.location.href='adminLog.html';
     }
 </script>
 </html>

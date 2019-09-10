@@ -1,5 +1,6 @@
 package com.example.springbootdemo.service.hui;
 
+import com.example.springbootdemo.model.DEPOSITS;
 import com.example.springbootdemo.model.hui.USERS;
 import com.example.springbootdemo.response.ResponseBo;
 import org.springframework.web.multipart.MultipartFile;
@@ -231,4 +232,14 @@ public interface TestService {
      */
 
     ResponseBo getImgPurchase(int uid) throws Exception;
+
+    /**
+     * 功能描述:用户充值
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 9:45
+     */
+
+    ResponseBo deposit(DEPOSITS deposits) throws Exception;
+
+
 }

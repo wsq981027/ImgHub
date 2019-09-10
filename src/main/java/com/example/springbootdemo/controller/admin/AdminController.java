@@ -1,5 +1,6 @@
 package com.example.springbootdemo.controller.admin;
 
+import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.response.ResponseBo;
 import com.example.springbootdemo.service.admin.AdminService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Copyright (C) 2014-2016
+ * 功能描述: 后台功能
+ * 作    者: wangzenghui
+ * 创建时间: 2019/9/6 14:30
+ * 修改记录:
+ *      <时间>            <作者>        <版本>        <描述>
+ *      2019/9/6 14:30  hui         1.0           初始创建
+ *
+ */
 
 @RestController
 @RequestMapping("/admin")
@@ -351,6 +362,44 @@ public class AdminController {
             responseBo.setResMsg("审核失败");
         }
         log.info("AdminController===>unauditImg 方法 出参:responseBo="+responseBo);
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:获取充值表数据
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 10:40
+     */
+
+    @RequestMapping("/getDeposits.do")
+    public ResponseBo getDeposits(){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 getDeposits 方法");
+        try {
+            responseBo=adminService.getDeposits();
+        } catch (Exception e) {
+            log.info("getDeposits 方法出现异常");
+            e.printStackTrace();
+        }
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:给用户添加积分，删除充值表
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 10:51
+     */
+
+    @RequestMapping("/addPoint.do")
+    public ResponseBo addPoint(POINTS points){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 addPoint 方法");
+        try {
+            responseBo=adminService.addPoint(points);
+        } catch (Exception e) {
+            log.info("addPoint 方法出现异常");
+            e.printStackTrace();
+        }
         return responseBo;
     }
 }
