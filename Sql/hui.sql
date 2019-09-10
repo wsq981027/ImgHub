@@ -11,7 +11,7 @@
  Target Server Version : 50153
  File Encoding         : 65001
 
- Date: 28/08/2019 16:26:00
+ Date: 10/09/2019 14:54:14
 */
 
 SET NAMES utf8mb4;
@@ -43,14 +43,14 @@ CREATE TABLE `attentions`  (
   `ATID` decimal(8, 0) NOT NULL,
   `FANID` decimal(8, 0) NOT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of attentions
 -- ----------------------------
 INSERT INTO `attentions` VALUES (1, 3, 4);
 INSERT INTO `attentions` VALUES (22, 5, 3);
-INSERT INTO `attentions` VALUES (23, 4, 3);
+INSERT INTO `attentions` VALUES (24, 4, 3);
 
 -- ----------------------------
 -- Table structure for auditimages
@@ -75,19 +75,31 @@ CREATE TABLE `collects`  (
   `IMGID` decimal(8, 0) NOT NULL,
   `USERID` decimal(8, 0) NOT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 84 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 93 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of collects
 -- ----------------------------
-INSERT INTO `collects` VALUES (47, 62, 3);
-INSERT INTO `collects` VALUES (50, 61, 3);
-INSERT INTO `collects` VALUES (51, 14, 3);
 INSERT INTO `collects` VALUES (61, 12, 3);
 INSERT INTO `collects` VALUES (62, 13, 3);
 INSERT INTO `collects` VALUES (81, 4, 4);
 INSERT INTO `collects` VALUES (82, 82, 3);
 INSERT INTO `collects` VALUES (83, 83, 3);
+INSERT INTO `collects` VALUES (86, 61, 3);
+INSERT INTO `collects` VALUES (92, 5, 3);
+
+-- ----------------------------
+-- Table structure for deposits
+-- ----------------------------
+DROP TABLE IF EXISTS `deposits`;
+CREATE TABLE `deposits`  (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uid` int(8) NOT NULL,
+  `point` int(8) NOT NULL,
+  `money` int(8) NOT NULL,
+  `aliname` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for images
@@ -107,7 +119,7 @@ CREATE TABLE `images`  (
 -- ----------------------------
 -- Records of images
 -- ----------------------------
-INSERT INTO `images` VALUES (2, '1563519460327.jpg', 'T2', 't2', 0, 3, 2);
+INSERT INTO `images` VALUES (2, '1563519460327.jpg', 'T2', 't2', 1, 3, 2);
 INSERT INTO `images` VALUES (3, '1563520569949.jpg', 'T3', 't3', 1, 3, 2);
 INSERT INTO `images` VALUES (4, '1563524107931.jpg', 'T4', 't4', 2, 3, 2);
 INSERT INTO `images` VALUES (5, '1563524142736.png', 'T5', 't5', 1, 4, 2);
@@ -141,16 +153,17 @@ CREATE TABLE `points`  (
   `uid` int(8) NULL DEFAULT NULL,
   `point` int(8) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
+) ENGINE = MyISAM AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
 
 -- ----------------------------
 -- Records of points
 -- ----------------------------
-INSERT INTO `points` VALUES (1, 3, 6);
-INSERT INTO `points` VALUES (2, 4, 7);
-INSERT INTO `points` VALUES (3, 5, 10);
+INSERT INTO `points` VALUES (1, 3, 27);
+INSERT INTO `points` VALUES (2, 4, 9);
+INSERT INTO `points` VALUES (3, 5, 11);
 INSERT INTO `points` VALUES (4, 23, 10);
-INSERT INTO `points` VALUES (5, 24, 10);
+INSERT INTO `points` VALUES (5, 24, 9);
+INSERT INTO `points` VALUES (6, 25, 10);
 
 -- ----------------------------
 -- Table structure for purchase
@@ -161,7 +174,7 @@ CREATE TABLE `purchase`  (
   `imgid` int(8) NULL DEFAULT NULL,
   `uid` int(8) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
+) ENGINE = MyISAM AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
 
 -- ----------------------------
 -- Records of purchase
@@ -176,6 +189,11 @@ INSERT INTO `purchase` VALUES (8, 61, 3);
 INSERT INTO `purchase` VALUES (9, 81, 4);
 INSERT INTO `purchase` VALUES (10, 62, 4);
 INSERT INTO `purchase` VALUES (11, 61, 4);
+INSERT INTO `purchase` VALUES (12, 5, 24);
+INSERT INTO `purchase` VALUES (13, 42, 3);
+INSERT INTO `purchase` VALUES (14, 15, 3);
+INSERT INTO `purchase` VALUES (15, 8, 3);
+INSERT INTO `purchase` VALUES (16, 24, 3);
 
 -- ----------------------------
 -- Table structure for thumb
@@ -186,23 +204,24 @@ CREATE TABLE `thumb`  (
   `IMGID` decimal(8, 0) NULL DEFAULT NULL,
   `USERID` decimal(8, 0) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 84 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 91 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of thumb
 -- ----------------------------
 INSERT INTO `thumb` VALUES (2, 3, 3);
-INSERT INTO `thumb` VALUES (3, 4, 3);
 INSERT INTO `thumb` VALUES (21, 16, 3);
 INSERT INTO `thumb` VALUES (22, 11, 3);
 INSERT INTO `thumb` VALUES (23, 9, 3);
-INSERT INTO `thumb` VALUES (44, 5, 3);
-INSERT INTO `thumb` VALUES (46, 62, 3);
 INSERT INTO `thumb` VALUES (62, 12, 3);
 INSERT INTO `thumb` VALUES (63, 13, 3);
 INSERT INTO `thumb` VALUES (81, 4, 4);
 INSERT INTO `thumb` VALUES (82, 82, 3);
 INSERT INTO `thumb` VALUES (83, 83, 3);
+INSERT INTO `thumb` VALUES (84, 62, 3);
+INSERT INTO `thumb` VALUES (88, 4, 3);
+INSERT INTO `thumb` VALUES (89, 2, 3);
+INSERT INTO `thumb` VALUES (90, 5, 3);
 
 -- ----------------------------
 -- Table structure for types
@@ -234,7 +253,7 @@ CREATE TABLE `users`  (
   `PIC` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'defaultPic.jpg',
   `BAN` decimal(1, 0) NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of users
@@ -244,5 +263,6 @@ INSERT INTO `users` VALUES (4, 'kok', '4QrcOUm6Wau+VuBX8g+IPg==', 'defaultPic.jp
 INSERT INTO `users` VALUES (5, 'dqb', 'ICy5YqxZB1uWSwcVLSNLcA==', 'defaultPic.jpg', 0);
 INSERT INTO `users` VALUES (23, 'qq2', 'ICy5YqxZB1uWSwcVLSNLcA==', 'defaultPic.jpg', 1);
 INSERT INTO `users` VALUES (24, 'newstar', 'XAwfCUyMEUP4vm+t9jJLVA==', 'defaultPic.jpg', 0);
+INSERT INTO `users` VALUES (25, 'myh', 'XAwfCUyMEUP4vm+t9jJLVA==', 'defaultPic.jpg', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
