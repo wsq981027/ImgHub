@@ -71,4 +71,7 @@
   <select id="selectByUserAndImg" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select * from purchase where uid=${uid} and imgid=${imgid}
   </select>
+  <delete id="deleteByImg" parameterType="java.lang.Integer">
+    delete from hui.purchase where imgid=${imgid}
+  </delete>
 </mapper>

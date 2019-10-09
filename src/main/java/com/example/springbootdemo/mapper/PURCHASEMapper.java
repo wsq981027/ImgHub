@@ -18,4 +18,6 @@ public interface PURCHASEMapper {
     int updateByPrimaryKey(PURCHASE record);
 
     PURCHASE selectByUserAndImg(int uid,int imgid);
+
+    int deleteByImg(int imgid);
 }

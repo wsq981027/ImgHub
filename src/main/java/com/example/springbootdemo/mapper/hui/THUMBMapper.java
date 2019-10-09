@@ -18,4 +18,6 @@ public interface THUMBMapper {
     THUMB selectByImgAndUser(int imgid,int userid);
 
     int deleteByImgAndUser(int imgid,int userid);
+
+    int deleteByImg(int imgid);
 }

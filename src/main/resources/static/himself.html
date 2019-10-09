@@ -175,7 +175,7 @@
     document.getElementById('curpage').innerText=page;
     // console.log('name='+name);
     if(name!='null') {
-        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+        document.getElementById('userpic').innerHTML='积分:'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
         document.getElementById('name1').innerText = name;
         document.getElementById('logBtn1').innerHTML='';
     }else{
@@ -320,7 +320,7 @@
                     success:function (datas) {
                         console.log('point:'+datas.result.point);
                         points=datas.result.point;
-                        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+                        document.getElementById('userpic').innerHTML='积分:'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
                     }
                 })
             }

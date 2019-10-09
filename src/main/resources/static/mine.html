@@ -153,7 +153,7 @@
     document.getElementById('curpage').innerText=page;
     // console.log('name='+name);
     if(name!='null') {
-        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+        document.getElementById('userpic').innerHTML='积分:'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
         document.getElementById('name1').innerText = name;
         document.getElementById('logBtn1').innerHTML='';
     }else{
@@ -328,7 +328,7 @@
                     success:function (datas) {
                         console.log('point:'+datas.result.point);
                         points=datas.result.point;
-                        document.getElementById('userpic').innerHTML='<h5>积分:</h5>'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
+                        document.getElementById('userpic').innerHTML='积分:'+points+'<img class="img-circle" src="/'+userpic+'" alt="" style="width: 50px;height: 50px">';
                     }
                 })
             }
@@ -367,14 +367,15 @@
                             processData: false,
                             success: function (data) {
                                 console.log('ssss:'+data);
+                                var id=datas.result[i]['id'];
                                 if (data.resMsg == '未点赞,未收藏')
-                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                 else if (data.resMsg == '已点赞,已收藏')
-                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                 else if (data.resMsg == '已点赞,未收藏')
-                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                 else
-                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                    $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                             },
                             error: function (datas) {
                                 console.log(datas);
@@ -391,6 +392,25 @@
         });
     }
 
+    function deleteImgById(imgid) {
+        console.log('imgid:'+imgid);
+        if (!confirm('确认删除?')) {
+            return;
+        }
+        $.ajax({
+            url:'/admin/deleteImgById.do?imgid='+imgid,
+            type:'get',
+            success:function (datas) {
+                if (datas.resMsg!='删除失败')
+                    alert('删除成功');
+                else
+                    alert('删除失败');
+                getImgs();
+            },error:function (datas) {
+                alert('删除失败2');
+            }
+        })
+    }
     function getMyFans() {
         document.getElementById('skippre').onclick=function () { skip("fans",-1); };
         document.getElementById('skipnex').onclick=function () { skip("fans",0); };
@@ -613,14 +633,15 @@
                                 contentType: false,
                                 processData: false,
                                 success: function (data) {
+                                    var id=datas.result[i]['id'];
                                     if (data.resMsg == '未点赞,未收藏')
-                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                     else if (data.resMsg == '已点赞,已收藏')
-                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                     else if (data.resMsg == '已点赞,未收藏')
-                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] + img10);
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7emp + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9 + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                     else
-                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] + img10);
+                                        $('#imgs').append(img1+datas.result[i]['id']+img2+ datas.result[i]['imgname']+img3+ datas.result[i]['title'] + img4 + datas.result[i]['intro'] + img5 + datas.result[i]['id'] + img6 + datas.result[i]['id'] + img7 + datas.result[i]['id'] + img8 + datas.result[i]['id'] + img9emp + datas.result[i]['thumb'] +'</a><button class="btn btn-default" onclick="deleteImgById('+id+')">删除</button>'+ '</p></div></div></div>');
                                 },
                                 error: function (datas) {
                                     console.log(datas);

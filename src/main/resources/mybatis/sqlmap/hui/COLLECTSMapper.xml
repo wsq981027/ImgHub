@@ -80,4 +80,7 @@
   <delete id="deleteByImgAndUser" parameterType="java.lang.Integer">
       delete from hui.collects where imgid=${imgid} and userid=${userid}
   </delete>
+  <delete id="deleteByImg" parameterType="java.lang.Integer">
+    delete from hui.collects where imgid=${imgid}
+  </delete>
 </mapper>

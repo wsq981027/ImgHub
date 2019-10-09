@@ -2,11 +2,9 @@ package com.example.springbootdemo.serviceimpl.admin;
 
 import com.example.springbootdemo.mapper.DEPOSITSMapper;
 import com.example.springbootdemo.mapper.POINTSMapper;
+import com.example.springbootdemo.mapper.PURCHASEMapper;
 import com.example.springbootdemo.mapper.admin.hui.ADMINSMapper;
-import com.example.springbootdemo.mapper.hui.AUDITIMAGESMapper;
-import com.example.springbootdemo.mapper.hui.IMAGESMapper;
-import com.example.springbootdemo.mapper.hui.TYPESMapper;
-import com.example.springbootdemo.mapper.hui.USERSMapper;
+import com.example.springbootdemo.mapper.hui.*;
 import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.model.admin.hui.ADMINS;
 import com.example.springbootdemo.model.hui.AUDITIMAGES;
@@ -45,6 +43,12 @@ public class AdminServiceImpl implements AdminService {
     DEPOSITSMapper depositsMapper;
     @Resource
     POINTSMapper pointsMapper;
+    @Resource
+    COLLECTSMapper collectsMapper;
+    @Resource
+    THUMBMapper thumbMapper;
+    @Resource
+    PURCHASEMapper purchaseMapper;
 
     @Override
     public ResponseBo login(String name, String password) throws Exception {
@@ -194,6 +198,9 @@ public class AdminServiceImpl implements AdminService {
     public ResponseBo deleteImgById(int imgid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
         int res=imagesMapper.deleteByPrimaryKey(imgid);
+        collectsMapper.deleteByImg(imgid);
+        thumbMapper.deleteByImg(imgid);
+        purchaseMapper.deleteByImg(imgid);
         if (res==0){
             responseBo.setResMsg("删除失败");
             return responseBo;
