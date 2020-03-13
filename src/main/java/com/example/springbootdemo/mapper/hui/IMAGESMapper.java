@@ -30,4 +30,6 @@ public interface IMAGESMapper {
     List selectByUser(int userid);
 
     List selectPurchase(int uid);
+
+    IMAGES selectByImgname(String imgname);
 }

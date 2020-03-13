@@ -1,6 +1,8 @@
 package com.example.springbootdemo.model;
 
-public class POINTS {
+import java.io.Serializable;
+
+public class POINTS implements Serializable {
     private Integer id;
 
     private Integer uid;

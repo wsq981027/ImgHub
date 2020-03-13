@@ -117,4 +117,7 @@
   <select id="selectLikeName" resultMap="BaseResultMap" parameterType="java.lang.String">
     select * from hui.auditimages where title like '%${name}%' or intro like '%${name}%'
   </select>
+  <select id="selectByImgname" resultType="com.example.springbootdemo.model.hui.AUDITIMAGES">
+    select * from auditimages where imgname='${imgname}'
+  </select>
 </mapper>

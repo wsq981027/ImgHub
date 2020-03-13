@@ -1,6 +1,8 @@
 package com.example.springbootdemo.model.hui;
 
-public class IMAGES {
+import java.io.Serializable;
+
+public class IMAGES implements Serializable {
     private Integer id;
 
     private String imgname;

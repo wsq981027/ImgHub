@@ -1,13 +1,11 @@
-package com.example.springbootdemo.model.hui;
+package com.example.springbootdemo.model;
 
-import java.io.Serializable;
-
-public class THUMB implements Serializable {
+public class AUDITTAGS {
     private Integer id;
 
     private Integer imgid;
 
-    private Integer userid;
+    private String name;
 
     public Integer getId() {
         return id;
@@ -25,11 +23,11 @@ public class THUMB implements Serializable {
         this.imgid = imgid;
     }
 
-    public Integer getUserid() {
-        return userid;
+    public String getName() {
+        return name;
     }
 
-    public void setUserid(Integer userid) {
-        this.userid = userid;
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
     }
 }

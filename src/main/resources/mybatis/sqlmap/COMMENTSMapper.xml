@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springbootdemo.mapper.COMMENTSMapper">
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.COMMENTS">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="imgid" jdbcType="INTEGER" property="imgid" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, imgid, userid, content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from comments
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from comments
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.springbootdemo.model.COMMENTS">
+    insert into comments (id, imgid, userid, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{imgid,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, 
+      #{content,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.COMMENTS">
+    insert into comments
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="imgid != null">
+        imgid,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imgid != null">
+        #{imgid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.COMMENTS">
+    update comments
+    <set>
+      <if test="imgid != null">
+        imgid = #{imgid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.COMMENTS">
+    update comments
+    set imgid = #{imgid,jdbcType=INTEGER},
+      userid = #{userid,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByImgid" resultType="com.example.springbootdemo.model.COMMENTS">
+    select c.id id, c.userid userid, c.content content,u.name username,u.pic pic from comments c join users u on c.userid=u.id where c.imgid=${imgid}
+  </select>
+  <delete id="deleteByImgid">
+    delete from comments where imgid=${imgid}
+  </delete>
+  <select id="selectAll" resultType="com.example.springbootdemo.model.COMMENTS">
+    select c.id id, c.userid userid, c.content content,u.name username,u.pic pic from comments c join users u on c.userid=u.id
+  </select>
+</mapper>

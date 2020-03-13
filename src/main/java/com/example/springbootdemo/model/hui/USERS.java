@@ -1,6 +1,8 @@
 package com.example.springbootdemo.model.hui;
 
-public class USERS {
+import java.io.Serializable;
+
+public class USERS{
     private Integer id;
 
     private String name;

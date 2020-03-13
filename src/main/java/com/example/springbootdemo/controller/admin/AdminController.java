@@ -1,10 +1,12 @@
 package com.example.springbootdemo.controller.admin;
 
+import com.example.springbootdemo.model.COMPLAINS;
 import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.response.ResponseBo;
 import com.example.springbootdemo.service.admin.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -398,6 +400,63 @@ public class AdminController {
             responseBo=adminService.addPoint(points);
         } catch (Exception e) {
             log.info("addPoint 方法出现异常");
+            e.printStackTrace();
+        }
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:获取评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 11:51
+     */
+
+    @RequestMapping("/getComments.do")
+    public ResponseBo getComments(){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 getComments 方法");
+        try {
+            responseBo=adminService.getComments();
+        } catch (Exception e) {
+            log.info("getComments 方法出现异常");
+            e.printStackTrace();
+        }
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:获取举报列表
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 13:20
+     */
+
+    @RequestMapping("/getComplains.do")
+    public ResponseBo getComplains(){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 getComplains 方法");
+        try {
+            responseBo=adminService.getComplains();
+        } catch (Exception e) {
+            log.info("getComplains 方法出现异常");
+            e.printStackTrace();
+        }
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:处理举报评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 14:13
+     */
+
+    @RequestMapping("/delComplains.do")
+    public ResponseBo delComplains(int compid){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 delComplains 方法");
+        try {
+            responseBo=adminService.delComplains(compid);
+        } catch (Exception e) {
+            log.info("delComplains 方法出现异常");
             e.printStackTrace();
         }
         return responseBo;

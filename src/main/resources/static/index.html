@@ -134,6 +134,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="imgtypes" class="col-sm-2 control-label">标签</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="tags" name="tags">
+                    <h5>(注:多个标签请用空格分隔)</h5>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="pic" class="col-sm-2 control-label">图片</label>
                 <div class="col-sm-10">
                     <input type="file" class="form-control" id="pic" name="pic">
@@ -147,10 +154,12 @@
             </div>
         </div>
         <br>
-        <h3 style="text-align: center">点赞排行</h3>
-        <table id="imgs2" class="table table-hover">
+        <h3 style="text-align: center" id="rightTitle">点赞排行</h3>
+        <div id="rightDiv">
+            <table id="imgs2" class="table table-hover">
 
-        </table>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -193,6 +202,25 @@
 <script type="text/javascript">
     var userid=sessionStorage.getItem('id');
     var points=0;
+
+
+    $("#regModal").bind("keypress", function(){
+        if (event.keyCode == 13){
+            // 触发需要调用的方法
+            reg();
+        }
+    })
+
+    $("#logModal").bind("keypress", function(){
+        if (event.keyCode == 13){
+            // 触发需要调用的方法
+            login();
+        }
+    })
+    document.oncontextmenu = function(){
+        return false;
+    }
+
 
     $.ajax({
         url:'/hui/TestController/getPoints.do?userid='+userid,
@@ -271,6 +299,12 @@
         window.location.href='mine.html';
     }
 
+    var staticTag='';
+    function mySearch2(tag) {
+        staticTag=tag;
+        mySearch();
+    }
+
     function mySearch() {
         document.getElementById('skippre').onclick=function () { skip("search",-1); };
         document.getElementById('skipnex').onclick=function () { skip("search",0); };
@@ -283,6 +317,8 @@
         sessionStorage.setItem('page',1);
         type='search';
         search=document.getElementById('search').value;
+        if (staticTag!='')
+            search=staticTag;
         if (search==''){
             alert('请输入搜索信息');
             return;
@@ -347,6 +383,7 @@
     }
 
     function getimg(imgid){
+        sessionStorage.setItem('imgid',imgid);
         $.ajax({
             url:"/hui/TestController/getImgById.do?imgid="+imgid,
             type:"get",
@@ -360,11 +397,26 @@
                         $.ajax({
                             url:'/hui/TestController/checkPurchase.do?userid='+userid+'&imgid='+data.result.id,
                             success:function (datas) {
-                                if (datas.resMsg=='已购买')
-                                    $('#imgs').append('<div style="text-align: center;"><img src="/'+data.result['imgname']+'" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself('+userdata.result['id']+')"><h3>上传人: '+userdata.result['name']+'</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#" onclick="purchase('+imgid+')"><button class="btn btn-primary btn-lg active">购买图片(1积分)</button></a><a href="/'+data.result['imgname']+'"download="'+data.result['imgname']+'"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
-                                else
-                                    $('#imgs').append('<div style="text-align: center;"><img src="/'+data.result['imgname']+'" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself('+userdata.result['id']+')"><h3>上传人: '+userdata.result['name']+'</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#" onclick="purchase('+imgid+')"><button class="btn btn-primary btn-lg active">购买图片(1积分)</button></a><a href="#" onclick="ale()"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
-                            }
+                                $.ajax({
+                                    url:'/hui/TestController/getTags.do?imgid='+imgid,
+                                    success:function(tagsData) {
+                                        sessionStorage.setItem('uploaduser',userdata.result['id']);
+                                        var uploadUserId=sessionStorage.getItem('uploaduser');
+                                                if (datas.resMsg == '已购买'||uploadUserId==userid)
+                                                    $('#imgs').append('<div style="text-align: center;"><img src="/' + data.result['imgname'] + '" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself(' + userdata.result['id'] + ')"><h3>上传人: ' + userdata.result['name'] + '</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#"><button class="btn btn-primary btn-lg active">已购买</button></a><a href="/' + data.result['imgname'] + '"download="' + data.result['imgname'] + '"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
+                                                else
+                                                    $('#imgs').append('<div style="text-align: center;"><img src="/' + data.result['imgname'] + '" style="width: 700px;height: 600px"><a href="#" onclick="gotoHimself(' + userdata.result['id'] + ')"><h3>上传人: ' + userdata.result['name'] + '</h3></a><button class="btn btn-info" onclick="backToMain()">返回</button></div><br><div style="text-align: center;"><a href="#" onclick="purchase(' + imgid + ')"><button class="btn btn-primary btn-lg active">购买图片(1积分)</button></a><a href="#" onclick="ale()"><button class="btn btn-primary btn-lg active">下载图片</button></a></div>');
+                                                $('#imgs').append('<div id="tags" style="text-align: center;"><h3>标签:</h3><br></div>')
+                                                for (var i = 0; i < tagsData.result.length; i++) {
+                                                    if (userid!=uploadUserId)
+                                                        $('#tags').append('<a href="#" onclick="mySearch2(\'' + tagsData.result[i]['name'] + '\')"><span class="label label-info">' + tagsData.result[i]['name'] + '('+tagsData.result[i]['count']+')</span></a>&nbsp');
+                                                    else
+                                                        $('#tags').append('<a href="#" onclick="mySearch2(\'' + tagsData.result[i]['name'] + '\')"><span class="label label-info">' + tagsData.result[i]['name'] + '('+tagsData.result[i]['count']+')</span></a><a href="#"><span class="glyphicon glyphicon-remove" onclick="delTag('+tagsData.result[i]['id']+')"></span></a>&nbsp');
+                                                }
+                                                getComments();
+                                    }
+                            })
+                                }
                         })
                     },error:function (userdata) {
                         console.log(userdata);
@@ -372,6 +424,77 @@
                 })
             },error:function (data) {
                 console.log(data);
+            }
+        })
+    }
+
+    function delTag(tagid) {
+        if (!confirm('确认删除标签?'))
+            return;
+        $.ajax({
+            url:'/hui/TestController/delTags.do?tagid='+tagid,
+            success:function (data) {
+                if (data.resMsg!='删除失败'){
+                    getimg(sessionStorage.getItem('imgid'));
+                }else
+                    alert('删除失败');
+            }
+        })
+    }
+
+    function addComments() {
+        if (userid==null){
+            alert('请在登录后发表评论');
+            return;
+        }
+        var content=$('#content').val();
+        var imgid=sessionStorage.getItem('imgid');
+        if (content==''){
+            alert('内容不能为空');
+            return;
+        }
+        $.ajax({
+            url:'/hui/TestController/addComments.do?userid='+userid+'&content='+content+'&imgid='+imgid,
+            success:function (data) {
+                if (data.resMsg!='添加失败'){
+                    getComments();
+                }else{
+                    alert('发表失败');
+                }
+            }
+        })
+    }
+
+    function getComments() {
+        $('#rightDiv').empty();
+        $('#rightDiv').append('<table id="imgs2" class="table table-hover">' +
+            '</table>');
+        $('#rightTitle').text('评论列表');
+        var imgid = sessionStorage.getItem('imgid');
+        $.ajax({
+            url: '/hui/TestController/getComments.do?imgid=' + imgid,
+            success: function (comments) {
+                $('#imgs2').append('<tbody id="rightTable">');
+                $('#rightTable').append('<tr> <td>用户</td><td>评论</td><td></td></tr>');
+                for (var i = 0; i < comments.result.length; i++) {
+                    console.log('评论id:'+comments.result[i]);
+                    $('#rightTable').append('<tr><td><a href="#" onclick="gotoHimself('+comments.result[i]['userid']+')"><img src="/'+comments.result[i]['pic']+'" class="img-circle" style="width: 30px;height: 30px">' + comments.result[i]['username'] + '</a></td> ' +
+                        '<td>' + comments.result[i]['content'] + '</td><td><a href="#"><span class="glyphicon glyphicon-option-horizontal" onclick="comOption('+comments.result[i]['id']+','+comments.result[i]['userid']+')"></span></a><div id="commentOption'+comments.result[i]['id']+'"></div></td></tr>');
+                }
+                $('#rightDiv').append('<hr><div class="form-horizontal" style="border-bottom: 1px solid silver">' +
+                    '            <div class="form-group">' +
+                    '                <label for="pic" class="col-sm-2 control-label">内容</label>' +
+                    '                <div class="col-sm-10">' +
+                    '                    <input type="text" class="form-control" id="content" name="content">' +
+                    '                </div>' +
+                    '            </div>' +
+                    '            <div class="form-group">' +
+                    '                <div class="col-sm-offset-2 col-sm-10">' +
+                    '                    <button class="btn btn-default" onclick="addComments()">发表</button>' +
+                    '                    <h5>(注:请在登录后发表)</h5>' +
+                    '                </div>' +
+                    '            </div>' +
+                    '        </div>')
             }
         })
     }
@@ -406,6 +529,11 @@
     }
 
         //右侧表格图片
+    getrightTable();
+    function getrightTable() {
+        $('#rightDiv').empty();
+        $('#rightDiv').append('<table id="imgs2" class="table table-hover">' +
+            '</table>');
         $.ajax({
             url: "/hui/TestController/selectAllOrderByThumb.do",
             type: "get",
@@ -413,10 +541,10 @@
             processData: false,
             success: function (datas) {
                 // $('#page').show();
-                $('#imgs2').append('<tbody>');
-                $('#imgs2').append('<tr> <td>编号</td> <td>类型</td> <td>标题</td><td>图片</td> <td>上传人</td> <td>点赞数</td></tr>');
-                for (var i=0;i<9;i++) {
-                    var n=parseInt(i)+1;
+                $('#imgs2').append('<tbody id="rightTable">');
+                $('#rightTable').append('<tr> <td>编号</td> <td>类型</td> <td>标题</td><td>图片</td> <td>上传人</td> <td>点赞数</td></tr>');
+                for (var i = 0; i < 9; i++) {
+                    var n = parseInt(i) + 1;
                     $.ajax({
                         url: "/hui/TestController/getUserById.do?userid=" + datas.result[i]['userid'],
                         type: "get",
@@ -427,10 +555,10 @@
                                 type: "get",
                                 async: false,
                                 success: function (datat) {
-                                        $('#imgs2').append('<tr><td>' + n + '</td><td>'+datat.result.name+'</td><td>' + datas.result[i]['title'] + '</td><td><a href="#" onclick="getimg('+datas.result[i]['id']+')"><img class="img img-rounded" src="/' + datas.result[i]['imgname'] + '" alt="" style="width: 50px;height: 50px"></a></td><td>' + data.result['name'] + '</td><td>' + datas.result[i]['thumb'] + '</td></tr>');
+                                    $('#rightTable').append('<tr><td>' + n + '</td><td>' + datat.result.name + '</td><td>' + datas.result[i]['title'] + '</td><td><a href="#" onclick="getimg(' + datas.result[i]['id'] + ')"><img class="img img-rounded" src="/' + datas.result[i]['imgname'] + '" alt="" style="width: 50px;height: 50px"></a></td><td>' + data.result['name'] + '</td><td>' + datas.result[i]['thumb'] + '</td></tr>');
                                 }
                             })
-                            $('#imgs2').append('</tbody>');
+                            // $('#imgs2').append('</tbody>');
                         }
                     })
                 }
@@ -439,6 +567,7 @@
                 console.log(datas);
             }
         });
+    }
     function backToMain(){
         skip(type,sessionStorage.getItem('page'));
     }
@@ -541,6 +670,8 @@
     });
 
     function skip(type,flag) {
+        getrightTable();
+        $('#rightTitle').text('点赞排行');
         if (flag==-1)
             var page=parseInt(sessionStorage.getItem('page'))-1;
         else if (flag==0)
@@ -652,6 +783,7 @@
         var pic = document.getElementById("pic").files[0];
         var title = document.getElementById("title").value;
         var intro = document.getElementById("intro").value;
+        var tags = document.getElementById("tags").value;
         var type=$('#imgtypes').val();
         if (userid==null){
             alert('请在登录后上传');
@@ -659,6 +791,10 @@
         }
         if (title==''){
             alert('标题不能为空');
+            return;
+        }
+        if(pic==undefined){
+            alert('请选择图片后上传');
             return;
         }
         // console.log(file);
@@ -669,6 +805,7 @@
         formData.append('intro',intro);
         formData.append('userid',userid);
         formData.append('type',type);
+        formData.append('tags',tags);
         console.log("test"+formData.get('pic'));
 
         $.ajax({
@@ -701,6 +838,11 @@
         var name=document.getElementById("regName").value;
         var password=document.getElementById("regPass1").value;
         var password2=document.getElementById("regPass2").value;
+        // console.log(name=='');
+        if (name==''){
+            alert('用户名不能为空');
+            return;
+        }
         if (password2!=password||password2=='null') {
             alert('两次密码输入不一致');
             return;
@@ -741,6 +883,10 @@
                 async : false,//是否异步请求
                 success : function(data) {   //如果请求成功，返回数据。
                     var html = "";
+                    if (data.resMsg=="该用户不存在"){
+                        alert("该用户不存在");
+                        return;
+                    }
                     if (data.resMsg=="密码错误"){
                         alert("密码错误");
                         return;
@@ -768,6 +914,61 @@
             window.location.href='admin.html';
         else
             window.location.href='adminLog.html';
+    }
+
+    function comOption(comid,comuser) {
+        var opid='commentOption'+comid;
+        console.log(comid+' |'+comuser);
+        if (comuser==userid) {
+            console.log('进入')
+            if (document.getElementById('jubao'+comid)==null) {
+                $('#' + opid).append('<a id="jubao'+comid+'" onclick="addComplains('+comid+')" href="#">举报</a>|');
+                $('#' + opid).append('<a href="#" onclick="delCom('+comid+')">删除</a>');
+            }else{
+                $('#'+opid).empty();
+            }
+        }else{
+            if (document.getElementById('jubao'+comid)==null) {
+                $('#' + opid).append('<a id="jubao'+comid+'" onclick="addComplains('+comid+')" href="#">举报</a>');
+            }else{
+                $('#'+opid).empty();
+            }
+        }
+    }
+
+    function delCom(comid) {
+        if (!confirm('确认删除评论?'))
+            return;
+        $.ajax({
+            url:'/hui/TestController/delComments.do?comid='+comid,
+            success:function (data) {
+                if (data.resMsg!='删除失败'){
+                    getComments()
+                }else {
+                    alert('删除失败');
+                }
+            }
+        })
+    }
+
+    function addComplains(comid) {
+        console.log(userid);
+        if (userid==null){
+            alert('请登录后操作');
+            return;
+        }
+        if (!confirm('确认举报?'))
+            return;
+        $.ajax({
+            url:'/hui/TestController/addComplains.do?comid='+comid+'&userid='+userid,
+            success:function (data) {
+                if (data.resMsg!='添加失败'){
+                    alert('举报成功');
+                }else{
+                    alert('举报失败');
+                }
+            }
+        })
     }
 </script>
 </html>

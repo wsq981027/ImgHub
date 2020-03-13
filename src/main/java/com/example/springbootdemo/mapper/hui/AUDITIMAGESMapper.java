@@ -20,4 +20,6 @@ public interface AUDITIMAGESMapper {
     List selectAll();
 
     List selectLikeName(String name);
+
+    AUDITIMAGES selectByImgname(String imgname);
 }

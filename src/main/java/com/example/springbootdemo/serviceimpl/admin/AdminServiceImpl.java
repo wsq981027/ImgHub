@@ -1,11 +1,12 @@
 package com.example.springbootdemo.serviceimpl.admin;
 
-import com.example.springbootdemo.mapper.DEPOSITSMapper;
-import com.example.springbootdemo.mapper.POINTSMapper;
-import com.example.springbootdemo.mapper.PURCHASEMapper;
+import com.example.springbootdemo.mapper.*;
 import com.example.springbootdemo.mapper.admin.hui.ADMINSMapper;
 import com.example.springbootdemo.mapper.hui.*;
+import com.example.springbootdemo.model.AUDITTAGS;
+import com.example.springbootdemo.model.COMPLAINS;
 import com.example.springbootdemo.model.POINTS;
+import com.example.springbootdemo.model.TAGS;
 import com.example.springbootdemo.model.admin.hui.ADMINS;
 import com.example.springbootdemo.model.hui.AUDITIMAGES;
 import com.example.springbootdemo.model.hui.IMAGES;
@@ -14,6 +15,9 @@ import com.example.springbootdemo.model.hui.USERS;
 import com.example.springbootdemo.response.ResponseBo;
 import com.example.springbootdemo.service.admin.AdminService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +53,14 @@ public class AdminServiceImpl implements AdminService {
     THUMBMapper thumbMapper;
     @Resource
     PURCHASEMapper purchaseMapper;
+    @Resource
+    AUDITTAGSMapper audittagsMapper;
+    @Resource
+    TAGSMapper tagsMapper;
+    @Resource
+    COMMENTSMapper commentsMapper;
+    @Resource
+    COMPLAINSMapper complainsMapper;
 
     @Override
     public ResponseBo login(String name, String password) throws Exception {
@@ -194,6 +206,7 @@ public class AdminServiceImpl implements AdminService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="imgscache",allEntries=true)})
     @Override
     public ResponseBo deleteImgById(int imgid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -201,6 +214,8 @@ public class AdminServiceImpl implements AdminService {
         collectsMapper.deleteByImg(imgid);
         thumbMapper.deleteByImg(imgid);
         purchaseMapper.deleteByImg(imgid);
+        tagsMapper.deleteByImgid(imgid);
+        commentsMapper.deleteByImgid(imgid);
         if (res==0){
             responseBo.setResMsg("删除失败");
             return responseBo;
@@ -298,11 +313,13 @@ public class AdminServiceImpl implements AdminService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="imgscache",allEntries=true)})
     @Override
     public ResponseBo auditImg(int imgid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
         int res1,res2=0;
         AUDITIMAGES auditimages=auditimagesMapper.selectByPrimaryKey(imgid);
+        List list=audittagsMapper.selectByImgid(imgid);
         IMAGES images=new IMAGES();
         images.setTypeid(auditimages.getTypeid());
         images.setUserid(auditimages.getUserid());
@@ -311,6 +328,18 @@ public class AdminServiceImpl implements AdminService {
         images.setImgname(auditimages.getImgname());
         res1=auditimagesMapper.deleteByPrimaryKey(imgid);
         res2=imagesMapper.insert(images);
+
+        images=imagesMapper.selectByImgname(images.getImgname());
+        for (int i=0;i<list.size();i++){
+            AUDITTAGS audittags= (AUDITTAGS) list.get(i);
+
+            TAGS tags=new TAGS();
+            tags.setImgid(images.getId());
+            tags.setName(audittags.getName());
+
+            audittagsMapper.deleteByPrimaryKey(audittags.getId());
+            tagsMapper.insert(tags);
+        }
         if (res1==0||res2==0){
             responseBo.setResMsg("审核失败");
             return responseBo;
@@ -334,6 +363,7 @@ public class AdminServiceImpl implements AdminService {
         oriPic.delete();
 
         res1=auditimagesMapper.deleteByPrimaryKey(imgid);
+        audittagsMapper.deleteByImgId(imgid);
         if (res1==0){
             responseBo.setResMsg("审核失败");
             return responseBo;
@@ -369,6 +399,55 @@ public class AdminServiceImpl implements AdminService {
             return responseBo;
         }
         responseBo.setResMsg("添加成功");
+        return responseBo;
+    }
+
+    @Cacheable(value = "commentscache")
+    @Override
+    public ResponseBo getComments() throws Exception {
+        log.info("后台评论没有读缓存");
+        ResponseBo responseBo=new ResponseBo();
+        List list=commentsMapper.selectAll();
+        if (list==null){
+            responseBo.setResMsg("获取失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("获取成功");
+        responseBo.setResult(list);
+        return responseBo;
+    }
+
+    @Override
+    public ResponseBo getComplains() throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        List<COMPLAINS> list=complainsMapper.selectAll();
+        for (int i=0;i<list.size();i++){
+            COMPLAINS temp=list.get(i);
+            USERS comu=usersMapper.selectByPrimaryKey(temp.getComuid());
+            temp.setComuname(comu.getName());
+            temp.setComupic(comu.getPic());
+            USERS u=usersMapper.selectByPrimaryKey(temp.getUserid());
+            temp.setUname(u.getName());
+            temp.setUpic(u.getPic());
+        }
+        if (list==null){
+            responseBo.setResMsg("获取失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("获取成功");
+        responseBo.setResult(list);
+        return responseBo;
+    }
+
+    @Override
+    public ResponseBo delComplains(int compid) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        int res=complainsMapper.deleteByPrimaryKey(compid);
+        if (res==0){
+            responseBo.setResMsg("删除失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("删除成功");
         return responseBo;
     }
 

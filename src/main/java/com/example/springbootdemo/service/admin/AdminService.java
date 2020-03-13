@@ -1,5 +1,6 @@
 package com.example.springbootdemo.service.admin;
 
+import com.example.springbootdemo.model.COMPLAINS;
 import com.example.springbootdemo.model.POINTS;
 import com.example.springbootdemo.model.admin.hui.ADMINS;
 import com.example.springbootdemo.model.hui.TYPES;
@@ -152,4 +153,28 @@ public interface AdminService {
      */
 
     ResponseBo addPoint(POINTS points) throws Exception;
+
+    /**
+     * 功能描述:获取评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 11:54
+     */
+
+    ResponseBo getComments() throws Exception;
+
+    /**
+     * 功能描述:获取举报列表
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 13:25
+     */
+
+    ResponseBo getComplains() throws Exception;
+
+    /**
+     * 功能描述:删除举报列表
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 14:25
+     */
+
+    ResponseBo delComplains(int compid) throws Exception;
 }

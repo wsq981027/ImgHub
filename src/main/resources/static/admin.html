@@ -77,6 +77,8 @@
         <LI><A class="accordion-toggle collapsed" style="color: gray;border-bottom: 1px solid silver" href="#" data-toggle="collapse" data-target="#mastersubmenu2">图片维护</A>
             <UL class="nav collapse" id="mastersubmenu2" style="padding-left: 20px;">
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getImgs()">图片列表</A></LI>
+                <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getComments()">评论列表</A></LI>
+                <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getComplains()">举报评论列表</A></LI>
                 <LI><A style="color: gray;border-bottom: 1px solid silver" href="#" onclick="getAuditImgs()">待审核图片列表</A></LI>
             </UL>
         </LI>
@@ -643,6 +645,42 @@
             }
         });
     }
+
+    function getComments() {
+        document.getElementById('skippre').onclick=function () { skip("comment",-1); };
+        document.getElementById('skipnex').onclick=function () { skip("comment",0); };
+        document.getElementById('skip1').onclick=function () { skip("comment",1); };
+        document.getElementById('skip2').onclick=function () { skip("comment",2); };
+        document.getElementById('skip3').onclick=function () { skip("comment",3); };
+        document.getElementById('skip4').onclick=function () { skip("comment",4); };
+        document.getElementById('skip5').onclick=function () { skip("comment",5); };
+
+        sessionStorage.setItem('page2',1);
+        document.getElementById('curpage').innerText=sessionStorage.getItem('page2');
+
+        $.ajax({
+            url: "/admin/getComments.do",
+            type: "get",
+            contentType: false,
+            processData: false,
+            success: function (comments) {
+                $('#users').empty();
+                $('#page').show();
+                $('#users').append('<tbody id="rightTable">');
+
+                $('#rightTable').append('<tr> <td>编号</td> <td>用户</td> <td>评论</td>  <td>操作</td> </tr>');
+                for (var i=0;i<12;i++) {
+                    var n = parseInt(i) + 1;
+                    console.log('评论id:' + comments.result[i]);
+                    $('#rightTable').append('<tr><td>'+n+'</td><td><a href="#" onclick="gotoHimself(' + comments.result[i]['userid'] + ')"><img src="/' + comments.result[i]['pic'] + '" class="img-circle" style="width: 30px;height: 30px">' + comments.result[i]['username'] + '</a></td> ' +
+                        '<td>' + comments.result[i]['content'] + '</td><td><a href="#" onclick="delComment('+comments.result[i]['id']+')">删除</a></td></tr>');
+                }
+            },
+            error: function (datas) {
+                console.log(datas);
+            }
+        });
+    }
     
     function deleteImgById(imgid) {
         if (!confirm('确认删除?')) {
@@ -804,14 +842,52 @@
             $.ajax({
                 url:'/admin/getDeposits.do',
                 success:function (datas) {
-                    for (var i=0;i<12;i++){
+                    for (var i=(page2-1)*12;i<page2*12;i++){
                         $.ajax({
                             url:'/hui/TestController/getUserById.do?userid='+datas.result[i]['uid'],
                             async:false,
                             success:function (data) {
-                                $('#users').append('<tr> <td>'+i+'</td> <td>'+datas.result[i]['point']+'</td> <td>'+data.result.name+'</td> <td><a href="#" onclick="addPoint('+datas.result[i]['point']+','+datas.result[i]['id']+','+datas.result[i]['uid']+')">通过|</a><a href="#" onclick="addPoint(0)">不通过</a></td> </tr>')
+                                $('#users').append('<tr> <td>'+i+1+'</td> <td>'+datas.result[i]['point']+'</td> <td>'+data.result.name+'</td> <td><a href="#" onclick="addPoint('+datas.result[i]['point']+','+datas.result[i]['id']+','+datas.result[i]['uid']+')">通过|</a><a href="#" onclick="addPoint(0)">不通过</a></td> </tr>')
                             }
                         })
+                    }
+                }
+            })
+        }
+        if(type=="comment"){
+            $.ajax({
+                url: "/admin/getComments.do",
+                type: "get",
+                contentType: false,
+                processData: false,
+                success: function (comments) {
+                    $('#users').empty();
+                    $('#page').show();
+                    $('#users').append('<tbody id="rightTable">');
+
+                    $('#rightTable').append('<tr> <td>编号</td> <td>用户</td> <td>评论</td>  <td>操作</td> </tr>');
+                    for (var i=(page2-1)*12;i<page2*12;i++) {
+                        var n = parseInt(i) + 1;
+                        console.log('评论id:' + comments.result[i]);
+                        $('#rightTable').append('<tr><td>'+n+'</td><td><a href="#" onclick="gotoHimself(' + comments.result[i]['userid'] + ')"><img src="/' + comments.result[i]['pic'] + '" class="img-circle" style="width: 30px;height: 30px">' + comments.result[i]['username'] + '</a></td> ' +
+                            '<td>' + comments.result[i]['content'] + '</td><td><a href="#" onclick="delComment('+comments.result[i]['id']+')">删除</a></td></tr>');
+                    }
+                },
+                error: function (datas) {
+                    console.log(datas);
+                }
+            });
+        }
+        if (type=='complain'){
+            $('#users').empty();
+            $('#users').append('<tbody>')
+            $('#users').append('<tr> <td>编号</td> <td>评论内容</td> <td>评论人</td><td>举报人</td> <td>操作</td> </tr>');
+            $.ajax({
+                url: '/admin/getComplains.do',
+                success: function (datas) {
+                    for (var i = 0; i < datas.result.length; i++){
+                        var n=i+1;
+                        $('#users').append('<tr> <td>' + n + '</td> <td>' + datas.result[i]['content'] + '</td> <td><img src="/'+datas.result[i]['comupic']+'" class="img-circle" style="width: 30px;height: 30px">' + datas.result[i]['comuname'] + '</td><td><img src="/'+datas.result[i]['upic']+'" class="img-circle" style="width: 30px;height: 30px">' + datas.result[i]['uname'] + '</td> <td><a href="#" onclick="handle('+datas.result[i]['id']+','+datas.result[i]['comid']+')">处理|</a><a href="#" onclick="unhandle('+datas.result[i]['id']+')">不处理</a></td> </tr>')
                     }
                 }
             })
@@ -819,6 +895,21 @@
         $('#users').append('</tbody>');
 
 
+    }
+
+    function delComment(comid) {
+        if (!confirm('确认删除?'))
+            return;
+        $.ajax({
+            url:'/hui/TestController/delComments.do?comid='+comid,
+            success:function (data) {
+                if (data.resMsg!='删除失败'){
+                    getComments();
+                }else{
+                    alert('删除失败');
+                }
+            }
+        })
     }
 
     function logout() {
@@ -870,7 +961,84 @@
                 getDeposit();
             }
         })
+    }
+
+    function getComplains() {
+        document.getElementById('skippre').onclick = function () {
+            skip("complain", -1);
+        };
+        document.getElementById('skipnex').onclick = function () {
+            skip("complain", 0);
+        };
+        document.getElementById('skip1').onclick = function () {
+            skip("complain", 1);
+        };
+        document.getElementById('skip2').onclick = function () {
+            skip("complain", 2);
+        };
+        document.getElementById('skip3').onclick = function () {
+            skip("complain", 3);
+        };
+        document.getElementById('skip4').onclick = function () {
+            skip("complain", 4);
+        };
+        document.getElementById('skip5').onclick = function () {
+            skip("complain", 5);
+        };
+
+        sessionStorage.setItem('page2', 1);
+        document.getElementById('curpage').innerText = sessionStorage.getItem('page2');
+
+        $('#users').empty();
+        $('#users').append('<tbody>')
+        $('#users').append('<tr> <td>编号</td> <td>评论内容</td> <td>评论人</td><td>举报人</td> <td>操作</td> </tr>');
+        $.ajax({
+            url: '/admin/getComplains.do',
+            success: function (datas) {
+                for (var i = 0; i < datas.result.length; i++){
+                    var n=i+1;
+                    $('#users').append('<tr> <td>' + n + '</td> <td>' + datas.result[i]['content'] + '</td> <td><img src="/'+datas.result[i]['comupic']+'" class="img-circle" style="width: 30px;height: 30px">' + datas.result[i]['comuname'] + '</td><td><img src="/'+datas.result[i]['upic']+'" class="img-circle" style="width: 30px;height: 30px">' + datas.result[i]['uname'] + '</td> <td><a href="#" onclick="handle('+datas.result[i]['id']+','+datas.result[i]['comid']+')">处理|</a><a href="#" onclick="unhandle('+datas.result[i]['id']+')">不处理</a></td> </tr>')
+                }}
+        })
 
     }
+    function handle(compid,comid) {
+        if (!confirm('确认处理?')){
+            return;
+        }
+        delCom(comid);
+        delComplain(compid);
+    }
+
+    function unhandle(compid) {
+        if (!confirm('确认不处理?')){
+            return;
+        }
+        delComplain(compid);
+    }
+        function delComplain(compid) {
+            $.ajax({
+                url:'/admin/delComplains.do?compid='+compid,
+                success:function (data) {
+                    if (data.resMsg!='删除失败'){
+                        getComplains();
+                    }else {
+                        alert('删除失败');
+                    }
+                }
+            })
+        }
+
+        function delCom(comid) {
+            $.ajax({
+                url:'/hui/TestController/delComments.do?comid='+comid,
+                success:function (data) {
+                    if (data.resMsg!='删除失败'){
+                    }else {
+                        alert('删除失败');
+                    }
+                }
+            })
+        }
 </script>
 </html>

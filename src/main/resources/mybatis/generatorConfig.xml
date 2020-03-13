@@ -6,7 +6,7 @@
 <generatorConfiguration>
     <!-- classPathEntry:数据库的JDBC驱动的jar包地址 -->
     <!--<classPathEntry location="C:\Users\ahuia\.m2\repository\com\oracle\ojdbc\10.2.0.4.0\ojdbc-10.2.0.4.0.jar" />-->
-    <classPathEntry location="C:\Users\ahuia\.m2\repository\mysql\mysql-connector-java\5.1.34\mysql-connector-java-5.1.34.jar" />
+    <classPathEntry location="C:\Users\OWEN\.m2\repository\mysql\mysql-connector-java\8.0.19\mysql-connector-java-8.0.19.jar" />
 
     <context id="myTable" targetRuntime="MyBatis3">
 
@@ -18,8 +18,8 @@
                         <!--password="hui">-->
         <!--</jdbcConnection>-->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/hui" userId="root"
-                        password="">
+                        connectionURL="jdbc:mysql://localhost:3306/hui?serverTimezone=UTC" userId="root"
+                        password="981027wsq">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false" />
@@ -40,8 +40,8 @@
         </javaClientGenerator>
 
 
-        <table schema="hui" tableName="deposits"
-               domainObjectName="DEPOSITS" enableCountByExample="false"
+        <table schema="hui" tableName="complains"
+               domainObjectName="COMPLAINS" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

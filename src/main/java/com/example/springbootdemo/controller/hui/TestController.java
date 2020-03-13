@@ -1,5 +1,7 @@
 package com.example.springbootdemo.controller.hui;
 
+import com.example.springbootdemo.model.COMMENTS;
+import com.example.springbootdemo.model.COMPLAINS;
 import com.example.springbootdemo.model.DEPOSITS;
 import com.example.springbootdemo.model.hui.PERSON;
 import com.example.springbootdemo.model.hui.USERS;
@@ -109,10 +111,12 @@ public class TestController {
     @RequestMapping(value = "/upload.do",method = {RequestMethod.POST, RequestMethod.GET})
     public ResponseBo  upload(HttpServletRequest request){
         ResponseBo responseBo=new ResponseBo();
+        ResponseBo responseBoTag=new ResponseBo();
         try {
         String title=request.getParameter("title");
         String intro=request.getParameter("intro");
         String type=request.getParameter("type");
+        String tags=request.getParameter("tags");
         int typeid=Integer.parseInt(type);
 //        log.info("type:"+typeid);
         USERS users=(USERS) request.getSession().getAttribute("users");
@@ -121,6 +125,8 @@ public class TestController {
         MultipartFile file = thisRequest.getFile("pic");
 
             responseBo=testService.upload(file,title,intro,typeid,userid);
+            int  imgid= (int) responseBo.getResult();
+            responseBoTag=testService.addAuditTags(imgid,tags);
         } catch (Exception e) {
             log.error("上传出错",e);
             responseBo.setResMsg("上传失败");
@@ -611,5 +617,143 @@ public class TestController {
         return responseBo;
     }
 
+    /**
+     * 功能描述:添加标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 14:11
+     */
 
+    @RequestMapping("/addTags.do")
+    public ResponseBo addTags(int imgid,String tags){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 addTags 方法");
+        try {
+            responseBo=testService.addTags(imgid,tags);
+        } catch (Exception e) {
+            log.info("addTags 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("addTags 方法出参"+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:获取标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 14:11
+     */
+
+    @RequestMapping("/getTags.do")
+    public ResponseBo getTags(String imgid){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 getTags 方法");
+        try {
+            responseBo=testService.getTags(imgid);
+        } catch (Exception e) {
+            log.info("getTags 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("getTags 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:删除标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 14:11
+     */
+
+    @RequestMapping("/delTags.do")
+    public ResponseBo delTags(int tagid){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 delTags 方法");
+        try {
+            responseBo=testService.delTags(tagid);
+        } catch (Exception e) {
+            log.info("delTags 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("delTags 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:添加评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 17:17
+     */
+
+    @RequestMapping("/addComments.do")
+    public ResponseBo addComments(COMMENTS comments){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 addComments 方法");
+        try {
+            responseBo=testService.addComments(comments,comments.getImgid());
+        } catch (Exception e) {
+            log.info("addComments 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("addComments 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:获取评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 17:47
+     */
+
+    @RequestMapping("/getComments.do")
+    public ResponseBo getComments(int imgid){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 getComments 方法");
+        try {
+            responseBo=testService.getComments(imgid);
+        } catch (Exception e) {
+            log.info("getComments 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("getComments 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:删除评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 18:47
+     */
+
+    @RequestMapping("/delComments.do")
+    public ResponseBo delComments(int comid){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 delComments 方法");
+        try {
+            responseBo=testService.delComments(comid);
+        } catch (Exception e) {
+            log.info("delComments 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("delComments 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
+
+    /**
+     * 功能描述:举报评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 18:47
+     */
+
+    @RequestMapping("/addComplains.do")
+    public ResponseBo addComplains(COMPLAINS complains){
+        ResponseBo responseBo=new ResponseBo();
+        log.info("进入 addComplains 方法");
+        try {
+            responseBo=testService.addComplains(complains);
+        } catch (Exception e) {
+            log.info("addComplains 方法出现异常");
+            e.printStackTrace();
+        }
+        log.info("addComplains 方法出参: "+responseBo.getResMsg());
+        return responseBo;
+    }
 }

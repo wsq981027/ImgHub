@@ -144,4 +144,7 @@
   <select id="selectPurchase" resultMap="BaseResultMap" parameterType="java.lang.Integer">
     select * from images i join purchase p on i.id=p.imgid where p.uid=${uid}
   </select>
+  <select id="selectByImgname" resultType="com.example.springbootdemo.model.hui.IMAGES">
+    select * from images where imgname='${imgname}'
+  </select>
 </mapper>

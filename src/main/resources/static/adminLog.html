@@ -59,8 +59,26 @@
         </div>
     </div>
 </div>
+<hr>
+<div style="text-align: center;"><a href="#" onclick="gotoAdmin()">Admin</a></div>
+<div style="text-align: center;"><span>官方邮箱: wsq981027@163.com</span></div>
 </body>
 <script>
+    $(document).keypress(function(e) {
+        if((e.keyCode || e.which)==13) {
+            // 触发需要调用的方法
+            login();
+        }
+    });
+
+
+       function gotoAdmin() {
+           var adminid=sessionStorage.getItem('adminid');
+           if(adminid!=null)
+               window.location.href='admin.html';
+           else
+               window.location.href='adminLog.html';
+       }
     function login() {
         var name=document.getElementById('user').value;
         var password=document.getElementById('password').value;

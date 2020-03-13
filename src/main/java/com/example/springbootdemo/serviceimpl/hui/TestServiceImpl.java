@@ -1,32 +1,26 @@
 package com.example.springbootdemo.serviceimpl.hui;
 
-import com.example.springbootdemo.mapper.DEPOSITSMapper;
-import com.example.springbootdemo.mapper.POINTSMapper;
-import com.example.springbootdemo.mapper.PURCHASEMapper;
+import com.example.springbootdemo.mapper.*;
 import com.example.springbootdemo.mapper.hui.*;
-import com.example.springbootdemo.model.DEPOSITS;
-import com.example.springbootdemo.model.POINTS;
-import com.example.springbootdemo.model.PURCHASE;
+import com.example.springbootdemo.model.*;
 import com.example.springbootdemo.model.hui.*;
 import com.example.springbootdemo.response.ResponseBo;
 import com.example.springbootdemo.service.hui.TestService;
 import com.example.springbootdemo.utils.MD5Util;
+import com.example.springbootdemo.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.security.MD5Encoder;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.security.provider.MD5;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -49,6 +43,14 @@ public class TestServiceImpl implements TestService {
     PURCHASEMapper purchaseMapper;
     @Resource
     DEPOSITSMapper depositsMapper;
+    @Resource
+    TAGSMapper tagsMapper;
+    @Resource
+    AUDITTAGSMapper audittagsMapper;
+    @Resource
+    COMMENTSMapper commentsMapper;
+    @Resource
+    COMPLAINSMapper complainsMapper;
     /**
      * 功能描述:注册
      * 作者: wangzenghui
@@ -155,6 +157,9 @@ public class TestServiceImpl implements TestService {
             responseBo.setResMsg("上传成功");
         else
             responseBo.setResMsg("上传失败");
+        AUDITIMAGES images=auditimagesMapper.selectByImgname(newName);
+        int imgid=images.getId();
+        responseBo.setResult(imgid);
         return responseBo;
     }
 
@@ -245,6 +250,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="thumbandcolcache",allEntries=true),@CacheEvict(value = "imgscache",allEntries = true)})
     @Override
     public ResponseBo thumb(int imgid,int userid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -278,6 +284,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="thumbandcolcache",allEntries=true),@CacheEvict(value = "imgscache",allEntries = true)})
     @Override
     public ResponseBo collect(int imgid, int userid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -313,6 +320,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Cacheable(value = "thumbandcolcache")
     @Override
     public ResponseBo checkThumbAndCollect(int imgid, int userid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -360,15 +368,30 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+
     @Override
     public ResponseBo selectImgLikeName(String name) throws Exception {
         ResponseBo responseBo=new ResponseBo();
         List result=imagesMapper.selectLikeNameOrIntro(name);
-        if (result==null){
+        Set set=new HashSet();
+        for (int i=0;i<result.size();i++){
+            IMAGES images= (IMAGES) result.get(i);
+            set.add(images.getId());
+        }
+        List tags=tagsMapper.selectLikeName(name);
+        List result2=new ArrayList();
+        for (int i=0;i<tags.size();i++) {
+            TAGS temp= (TAGS) tags.get(i);
+            int imgid=temp.getImgid();
+            if (!set.contains(imgid))
+                result2.add(imagesMapper.selectByPrimaryKey(imgid));
+        }
+        if (result==null&&tags==null){
             log.info("search方法结果 无查询结果");
             responseBo.setResMsg("查询失败");
             return responseBo;
         }
+        result.addAll(result2);
         log.info("search方法结果 出参 result:"+result);
         responseBo.setResMsg("查询成功");
         responseBo.setResult(result);
@@ -420,6 +443,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Cacheable(value = "imgscache")
     @Override
     public ResponseBo getImgsByType(int typeid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -435,6 +459,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Cacheable(value = "imgscache")
     @Override
     public ResponseBo selectAllOrderByThumb() throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -553,6 +578,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Cacheable(value = "pointscache")
     @Override
     public ResponseBo getPoints(int uid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -568,6 +594,7 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="pointscache",allEntries=true)})
     @Override
     public ResponseBo purchaseImg(int uid, int imgid) throws Exception {
         ResponseBo responseBo=new ResponseBo();
@@ -644,6 +671,136 @@ public class TestServiceImpl implements TestService {
         return responseBo;
     }
 
+    @Caching(evict={@CacheEvict(value="tagscache",allEntries=true)})
+    @Override
+    public ResponseBo addTags(int imgid, String tags) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+
+        ArrayList<String> list= StringUtil.split(tags);
+        for (int i=0;i<list.size();i++) {
+            String tag=list.get(i);
+            int imgidNum=imgid;
+            int res=-1;
+            TAGS dataTags=tagsMapper.selectByNameAndImgid(tag,imgidNum);
+            if (dataTags==null) {
+                TAGS newTags = new TAGS();
+                newTags.setName(tag);
+                newTags.setImgid(imgidNum);
+                res = tagsMapper.insert(newTags);
+            }
+            if (res == 0) {
+                responseBo.setResMsg("插入失败");
+                responseBo.setResult(i);
+                return responseBo;
+            }
+            responseBo.setResMsg("插入成功");
+        }
+        return responseBo;
+    }
+
+    @Override
+    public ResponseBo addAuditTags(int imgid, String tags) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+
+        ArrayList<String> list= StringUtil.split(tags);
+        for (int i=0;i<list.size();i++) {
+            String tag=list.get(i);
+            int imgidNum=imgid;
+            int res=-1;
+            AUDITTAGS newTags = new AUDITTAGS();
+            newTags.setName(tag);
+            newTags.setImgid(imgidNum);
+            res = audittagsMapper.insert(newTags);
+            if (res == 0) {
+                responseBo.setResMsg("添加失败");
+                responseBo.setResult(i);
+                return responseBo;
+            }
+            responseBo.setResMsg("添加成功");
+        }
+        return responseBo;
+    }
+
+    @Cacheable(value = "tagscache")
+    @Override
+    public ResponseBo getTags(String imgid) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        int imgidNum=Integer.parseInt(imgid);
+        List list=tagsMapper.selectByImgid(imgidNum);
+        int count=0;
+        for (int i=0;i<list.size();i++){
+            TAGS tags= (TAGS) list.get(i);
+            count=tagsMapper.selectCountByTag(tags.getName());
+            tags.setCount(count);
+        }
+        responseBo.setResult(list);
+        responseBo.setResMsg("获取成功");
+        return responseBo;
+    }
+
+    @Caching(evict={@CacheEvict(value="tagscache",allEntries=true)})
+    @Override
+    public ResponseBo delTags(int tagid) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        int res=tagsMapper.deleteByPrimaryKey(tagid);
+        if (res==0){
+            responseBo.setResMsg("删除失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("删除成功");
+        return responseBo;
+    }
+
+    @Caching(evict={@CacheEvict(value="commentscache",allEntries=true)})
+    @Override
+    public ResponseBo addComments(COMMENTS comments,int imgid) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+
+        int res=commentsMapper.insert(comments);
+        if (res==0){
+            responseBo.setResMsg("添加失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("添加成功");
+        return responseBo;
+    }
+
+    @Cacheable(value = "commentscache")
+    @Override
+    public ResponseBo getComments(int imgid) throws Exception {
+        log.info("没有走缓存");
+        ResponseBo responseBo=new ResponseBo();
+        List list=commentsMapper.selectByImgid(imgid);
+        responseBo.setResult(list);
+        responseBo.setResMsg("获取成功");
+        return responseBo;
+    }
+
+    @Caching(evict={@CacheEvict(value="commentscache",allEntries=true)})
+    @Override
+    public ResponseBo delComments(int comid) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+        int res = commentsMapper.deleteByPrimaryKey(comid);
+        if (res==0){
+            responseBo.setResMsg("删除失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("删除成功");
+        return responseBo;
+    }
+
+    @Override
+    public ResponseBo addComplains(COMPLAINS complains) throws Exception {
+        ResponseBo responseBo=new ResponseBo();
+
+        int res=complainsMapper.insert(complains);
+        if (res==0){
+            responseBo.setResMsg("添加失败");
+            return responseBo;
+        }
+        responseBo.setResMsg("添加成功");
+        return responseBo;
+    }
 
 
 }

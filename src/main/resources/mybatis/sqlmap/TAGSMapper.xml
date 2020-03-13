@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.TAGSMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.model.TAGS" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="imgid" property="imgid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, imgid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tags
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tags
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.springbootdemo.model.TAGS" >
+    insert into tags (id, name, imgid
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{imgid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.model.TAGS" >
+    insert into tags
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="imgid != null" >
+        imgid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="imgid != null" >
+        #{imgid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.model.TAGS" >
+    update tags
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="imgid != null" >
+        imgid = #{imgid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.model.TAGS" >
+    update tags
+    set name = #{name,jdbcType=VARCHAR},
+      imgid = #{imgid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByNameAndImgid" resultType="com.example.springbootdemo.model.TAGS">
+    select * from tags where name = '${name}' and imgid = ${imgid}
+  </select>
+  <select id="selectByImgid" resultType="com.example.springbootdemo.model.TAGS">
+    select * from tags where imgid= ${imgid}
+  </select>
+  <select id="selectCountByTag" resultType="java.lang.Integer">
+    select count(*) from tags where name='${tag}'
+  </select>
+  <select id="selectLikeName" resultType="com.example.springbootdemo.model.TAGS">
+    select * from tags where name like '%${name}%'
+  </select>
+  <delete id="deleteByImgid">
+    delete from tags where imgid=${imgid}
+  </delete>
+</mapper>

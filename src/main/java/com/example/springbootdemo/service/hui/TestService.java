@@ -1,5 +1,7 @@
 package com.example.springbootdemo.service.hui;
 
+import com.example.springbootdemo.model.COMMENTS;
+import com.example.springbootdemo.model.COMPLAINS;
 import com.example.springbootdemo.model.DEPOSITS;
 import com.example.springbootdemo.model.hui.USERS;
 import com.example.springbootdemo.response.ResponseBo;
@@ -241,5 +243,68 @@ public interface TestService {
 
     ResponseBo deposit(DEPOSITS deposits) throws Exception;
 
+    /**
+     * 功能描述:添加标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 14:22
+     */
+
+    ResponseBo addTags(int imgid,String tags) throws Exception;
+
+    /**
+     * 功能描述:添加待审核标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 15:22
+     */
+
+    ResponseBo addAuditTags(int imgid,String tags) throws Exception;
+
+    /**
+     * 功能描述:获取标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 15:41
+     */
+
+    ResponseBo getTags(String imgid) throws Exception;
+
+    /**
+     * 功能描述:删除标签
+     * 作者: wangzenghui
+     * 创建时间：2019/9/10 15:41
+     */
+
+    ResponseBo delTags(int tagid) throws Exception;
+
+    /**
+     * 功能描述:添加评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 17:25
+     */
+
+    ResponseBo addComments(COMMENTS comments,int imgid) throws Exception;
+
+    /**
+     * 功能描述:获取评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 17:41
+     */
+
+    ResponseBo getComments(int imgid) throws Exception;
+
+    /**
+     * 功能描述:删除评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 18:47
+     */
+
+    ResponseBo delComments(int comid) throws Exception;
+
+    /**
+     * 功能描述:举报评论
+     * 作者: wangzenghui
+     * 创建时间：2019/9/12 13:33
+     */
+
+    ResponseBo addComplains(COMPLAINS complains) throws Exception;
 
 }
